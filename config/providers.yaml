@@ -1,10 +1,9 @@
 providers:
   ollama:
     base_url: "http://localhost:11434"
-    api_key: ""
     type: ollama
 
   opencode_go:
-    base_url: "http://localhost:8080/v1" # Ví dụ port của OpenCode Go
-    api_key_env: "" # Cấu hình trống nếu chạy local không cần key
+    base_url: "https://your-opencode-go-endpoint/v1"
+    api_key_env: "OPENCODE_GO_API_KEY"
     type: openai_compatible

@@ -40,20 +40,26 @@ fallback_chains:
   local_fast:
     - provider: ollama
       model: qwen2.5-coder:7b
-    - provider: opencode_go
-      model: default
+    - provider: opencode_go   # fallback nếu ollama down
+      model: your-cloud-model
+
   cloud_fast:
     - provider: opencode_go
-      model: default
+      model: your-cloud-model
+    - provider: ollama        # fallback nếu cloud fail
+      model: qwen2.5-coder:7b
+
   cloud_debug:
     - provider: opencode_go
-      model: default
+      model: your-cloud-model
+
   cloud_architecture:
     - provider: opencode_go
-      model: default
+      model: your-cloud-model
+
   cloud_vision:
     - provider: opencode_go
-      model: default
+      model: your-cloud-vision-model
 
 timeouts:
   ollama_seconds: 60
