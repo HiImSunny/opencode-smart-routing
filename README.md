@@ -52,6 +52,8 @@ bash scripts/run_dev.sh
 $env:ROUTER_PORT=1234; uvicorn app.main:app --host 0.0.0.0 --port 1234 --reload
 ```
 
+**Access the Admin Dashboard**: Open `http://localhost:1234/ui` in your web browser.
+
 ### 4. Configure OpenCode
 
 Add to `~/.config/opencode/opencode.json`:
@@ -85,6 +87,16 @@ Add to `~/.config/opencode/opencode.json`:
 | `GET` | `/router/status` | Provider availability & loaded policy |
 | `GET` | `/router/policy` | Parsed policy as JSON |
 | `POST` | `/router/reload` | Hot-reload `policy.yaml` & `providers.yaml` |
+
+---
+
+## 🎨 Admin Dashboard UI
+
+The proxy includes a built-in static UI served directly from the FastAPI application.
+
+1. Ensure the router is running.
+2. Navigate to `http://localhost:1234/ui`.
+3. You can view Dashboard Overview, edit policies in the Policy Editor, and check historic JSONL Telemetry Logs.
 
 ---
 
