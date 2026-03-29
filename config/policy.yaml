@@ -40,32 +40,20 @@ fallback_chains:
   local_fast:
     - provider: ollama
       model: qwen2.5-coder:7b
-    - provider: minimax
-      model: MiniMax-Text-01
+    - provider: opencode_go
+      model: default
   cloud_fast:
-    - provider: minimax
-      model: MiniMax-Text-01
-    - provider: minimax
-      model: MiniMax-M1
-    - provider: zhipu
-      model: glm-4-plus
+    - provider: opencode_go
+      model: default
   cloud_debug:
-    - provider: minimax
-      model: MiniMax-M1
-    - provider: zhipu
-      model: glm-4-plus
-    - provider: minimax
-      model: MiniMax-Text-01
+    - provider: opencode_go
+      model: default
   cloud_architecture:
-    - provider: zhipu
-      model: glm-4-plus
-    - provider: minimax
-      model: MiniMax-M1
+    - provider: opencode_go
+      model: default
   cloud_vision:
-    - provider: moonshot
-      model: moonshot-v1-8k
-    - provider: zhipu
-      model: glm-4v
+    - provider: opencode_go
+      model: default
 
 timeouts:
   ollama_seconds: 60

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ROUTER_PORT: int = int(os.getenv("ROUTER_PORT", "4000"))
+ROUTER_PORT: int = int(os.getenv("ROUTER_PORT", "1234"))
 LOG_DIR: str = os.getenv("LOG_DIR", "./logs")
 CONFIG_DIR: str = os.getenv("CONFIG_DIR", "./config")
 

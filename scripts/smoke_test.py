@@ -1,12 +1,12 @@
 """
-Smoke test — run against a live server at http://localhost:4000.
+Smoke test — run against a live server at http://localhost:1234.
 Usage: python scripts/smoke_test.py
 """
 import httpx
 import json
 import sys
 
-BASE = "http://localhost:4000"
+BASE = "http://localhost:1234"
 
 
 def check(label: str, cond: bool, detail: str = ""):

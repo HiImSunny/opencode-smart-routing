@@ -8,5 +8,5 @@ fi
 
 uvicorn app.main:app \
   --host 0.0.0.0 \
-  --port "${ROUTER_PORT:-4000}" \
+  --port "${ROUTER_PORT:-1234}" \
   --reload

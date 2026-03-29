@@ -4,7 +4,7 @@
 
 ```
 OpenCode
-  └─► Smart Router (localhost:4000/v1)
+  └─► Smart Router (localhost:1234/v1)
         ├─ Feature Extractor  (chars, keywords, image?)
         ├─ Router Engine      (5 route classes)
         ├─ Fallback Manager   (chain with retry)
@@ -18,11 +18,11 @@ OpenCode
 
 | Route Class | Trigger | Primary Backend |
 |---|---|---|
-| `cloud_vision` | `has_image` or vision keywords | Moonshot / GLM-4V |
-| `cloud_architecture` | architecture keywords or `chars ≥ 8000` | GLM-4-plus / MiniMax M1 |
-| `cloud_debug` | debug / security keywords | MiniMax M1 / GLM-4-plus |
+| `cloud_vision` | `has_image` or vision keywords | OpenCode Go |
+| `cloud_architecture` | architecture keywords or `chars ≥ 8000` | OpenCode Go |
+| `cloud_debug` | debug / security keywords | OpenCode Go |
 | `local_fast` | simple keywords + `chars ≤ 2000` + `msgs ≤ 6` | Ollama qwen2.5-coder:7b |
-| `cloud_fast` | everything else | MiniMax Text-01 |
+| `cloud_fast` | everything else | OpenCode Go |
 
 ---
 
@@ -39,7 +39,7 @@ poetry install
 
 ```bash
 cp .env.example .env
-# Edit .env and add your API keys
+# Edit .env to change port or paths if needed
 ```
 
 ### 3. Start the router
@@ -49,7 +49,7 @@ cp .env.example .env
 bash scripts/run_dev.sh
 
 # Windows (PowerShell)
-$env:ROUTER_PORT=4000; uvicorn app.main:app --host 0.0.0.0 --port 4000 --reload
+$env:ROUTER_PORT=1234; uvicorn app.main:app --host 0.0.0.0 --port 1234 --reload
 ```
 
 ### 4. Configure OpenCode
@@ -62,7 +62,7 @@ Add to `~/.config/opencode/opencode.json`:
     "smart-router": {
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "http://localhost:4000/v1",
+        "baseURL": "http://localhost:1234/v1",
         "apiKey": "local"
       },
       "models": {
@@ -96,7 +96,7 @@ Controls routing thresholds, keyword rules, fallback chains, timeouts, and coold
 
 ### `config/providers.yaml`
 
-Defines backends (Ollama, MiniMax, ZhiPu, Moonshot). API keys are read from environment variables.
+Defines backends (Ollama and OpenCode Go). No API keys are required for local providers.
 
 ---
 
