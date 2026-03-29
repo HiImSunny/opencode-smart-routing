@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Lens - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(45, 52, 73, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .tonal-shift-bg-surface-container-low {
+            background-color: #131b2e;
+        }
+        .no-border-tonal-overlap {
+            border: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed": "#002113",
+                        "on-primary-fixed": "#4d1600",
+                        "on-background": "#feeddf",
+                        "surface-dim": "#0b1326",
+                        "on-secondary-container": "#ccb8a7",
+                        "on-primary": "#4c1a00",
+                        "primary-container": "#f97316",
+                        "on-tertiary": "#003824",
+                        "on-secondary": "#433123",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-secondary-fixed-variant": "#5a4839",
+                        "surface-container": "#171f33",
+                        "outline-variant": "#544a45",
+                        "surface-container-highest": "#2d3449",
+                        "secondary-container": "#5a4839",
+                        "primary-fixed": "#ffdfcc",
+                        "on-tertiary-container": "#000703",
+                        "surface-container-lowest": "#060e20",
+                        "on-primary-fixed-variant": "#be4d2e",
+                        "surface-bright": "#31394d",
+                        "surface-container-low": "#131b2e",
+                        "primary": "#f97316",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#f97316",
+                        "tertiary": "#4edea3",
+                        "secondary": "#deb9a7",
+                        "surface-container-high": "#222a3d",
+                        "on-surface": "#feeddf",
+                        "background": "#0b1326",
+                        "inverse-on-surface": "#443028",
+                        "inverse-surface": "#feeddf",
+                        "surface-variant": "#493d34",
+                        "on-primary-container": "#4c1a00",
+                        "on-surface-variant": "#d7c9c4",
+                        "secondary-fixed-dim": "#deb9a7",
+                        "tertiary-container": "#00885d",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#2d1c0d",
+                        "outline": "#a0928f",
+                        "inverse-primary": "#d64b49",
+                        "surface-tint": "#f97316",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#fad4c4",
+                        "surface": "#0b1326"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 bottom-0 z-40 h-full w-64 border-r border-slate-800/50 bg-slate-900/95 dark:bg-[#131b2e] shadow-2xl shadow-orange-900/20 font-['Space_Grotesk'] tracking-tight">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-10 h-10 rounded bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="lens" style="font-variation-settings: 'FILL' 1;">lens</span>
+</div>
+<div>
+<h1 class="text-xl font-bold text-orange-500 dark:text-[#f97316]">Kinetic Lens</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant/60">AI Routing Proxy</p>
+</div>
+</div>
+<nav class="space-y-2">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-orange-500 dark:text-[#f97316] bg-orange-500/10 rounded-lg translate-x-1 transition-transform group" href="javascript:void(0)">
+<span class="material-symbols-outlined text-orange-500" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 hover:bg-slate-800/50 transition-all duration-200 group" href="javascript:void(0)">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span>Policy Editor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 hover:bg-slate-800/50 transition-all duration-200 group" href="javascript:void(0)">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span>Telemetry Logs</span>
+</a>
+</nav>
+</div>
+<div class="absolute bottom-8 left-6 right-6">
+<div class="p-4 rounded-xl bg-surface-container-highest/40 backdrop-blur-sm">
+<p class="text-xs text-on-surface-variant mb-2">Proxy Health</p>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full w-[98%] bg-tertiary shadow-[0_0_8px_rgba(78,222,163,0.5)]"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 left-64 h-16 flex items-center justify-between px-8 z-30 bg-slate-900/60 dark:bg-[#0b1326]/60 backdrop-blur-xl no-border-tonal-overlap font-['Inter'] text-sm font-medium">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-slate-100 dark:text-[#dae2fd]">Proxy Engine v1.0</span>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary-container/20 text-tertiary text-[10px] font-bold tracking-wider uppercase">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+</span>
+                Live System
+            </div>
+</div>
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-6">
+<a class="text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 transition-colors" href="javascript:void(0)">Docs</a>
+<a class="text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 transition-colors" href="javascript:void(0)">API Keys</a>
+<a class="text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 transition-colors" href="javascript:void(0)">Support</a>
+</div>
+<div class="h-6 w-px bg-outline-variant/20"></div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-400 dark:text-[#c7c4d7] hover:text-orange-400 transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest border border-outline-variant/30">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a professional system administrator in soft office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwBCxtEVY1gsDnbPgH8iUo-9oR2P9YNdrANq4kfzAEMSd8a4JD7GlaE5kTNMtYd1K4WI4sEnLPzXTllT4ZzCtCx_8ENz_bE10ifdeZ0cp30nsDURYkLvDaNOM45gQM3bRohVOjCaAVZTMg2i-2oR2ypWpnPgdhbQSrkBpvHt2Rb8374xAFB2ufszCal6tPWB2Vr8NcVvS5pOpyQJBjz0suOWw7lUj2XSsqKdYzyDN5vd1GU2iHZd6B_B8ZwinYLJS9r4GcqY7zAKE"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 p-8 min-h-screen bg-surface">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Top Row: Summary Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Providers -->
+<div class="glass-card p-6 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="dns">dns</span>
+</div>
+<p class="text-sm font-medium text-on-surface-variant mb-1">Total Providers Online</p>
+<div class="flex items-baseline gap-2">
+<h2 class="text-4xl font-headline font-bold text-primary">2/2</h2>
+<span class="text-xs text-tertiary">100% Availability</span>
+</div>
+<div class="mt-4 flex gap-1">
+<div class="h-1 flex-1 bg-tertiary rounded-full"></div>
+<div class="h-1 flex-1 bg-tertiary rounded-full"></div>
+</div>
+</div>
+<!-- Card 2: Policy Status -->
+<div class="glass-card p-6 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="verified_user">verified_user</span>
+</div>
+<p class="text-sm font-medium text-on-surface-variant mb-1">Policy Last Loaded</p>
+<div class="flex items-baseline gap-2">
+<h2 class="text-4xl font-headline font-bold text-on-surface">5 <span class="text-lg font-light text-on-surface-variant">min ago</span></h2>
+</div>
+<p class="mt-4 text-xs font-mono text-outline italic">v2.4.1-stable hot-reload success</p>
+</div>
+<!-- Card 3: Avg Latency -->
+<div class="glass-card p-6 rounded-xl relative overflow-hidden group border-l-2 border-orange-500/50">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="speed">speed</span>
+</div>
+<p class="text-sm font-medium text-on-surface-variant mb-1">System Avg Latency</p>
+<div class="flex items-baseline gap-2">
+<h2 class="text-4xl font-headline font-bold text-primary-container">42 <span class="text-lg font-light text-on-surface-variant">ms</span></h2>
+</div>
+<!-- Mock Sparkline -->
+<div class="mt-4 h-6 flex items-end gap-1">
+<div class="w-full h-3 bg-orange-500/20 rounded-t-sm"></div>
+<div class="w-full h-4 bg-orange-500/30 rounded-t-sm"></div>
+<div class="w-full h-2 bg-orange-500/20 rounded-t-sm"></div>
+<div class="w-full h-5 bg-orange-500/40 rounded-t-sm"></div>
+<div class="w-full h-3 bg-primary rounded-t-sm shadow-[0_0_8px_rgba(249,115,22,0.4)]"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Provider Status (4 cols) -->
+<section class="lg:col-span-4 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-lg font-bold tracking-tight">Provider Status</h3>
+<button class="text-xs text-primary hover:underline">Refresh</button>
+</div>
+<div class="space-y-4">
+<!-- Provider 1 -->
+<div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-surface-container-highest">
+<span class="material-symbols-outlined text-orange-500" data-icon="cloud">cloud</span>
+</div>
+<div>
+<h4 class="font-medium">ollama</h4>
+<p class="text-[10px] text-on-surface-variant font-mono">localhost:11434</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[10px] font-bold uppercase">Available</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-[11px]">
+<div>
+<p class="text-on-surface-variant">Models</p>
+<p class="font-mono text-on-surface">llama3, mistral</p>
+</div>
+<div>
+<p class="text-on-surface-variant">Avg TTFT</p>
+<p class="font-mono text-on-surface">12ms</p>
+</div>
+</div>
+</div>
+<!-- Provider 2 -->
+<div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-surface-container-highest">
+<span class="material-symbols-outlined text-orange-500" data-icon="hub">hub</span>
+</div>
+<div>
+<h4 class="font-medium">opencode_go</h4>
+<p class="text-[10px] text-on-surface-variant font-mono">10.0.4.12:8080</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[10px] font-bold uppercase">Available</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-[11px]">
+<div>
+<p class="text-on-surface-variant">Models</p>
+<p class="font-mono text-on-surface">deepseek-67b</p>
+</div>
+<div>
+<p class="text-on-surface-variant">Avg TTFT</p>
+<p class="font-mono text-on-surface">244ms</p>
+</div>
+</div>
+</div>
+<button class="w-full py-3 rounded-lg border border-dashed border-outline-variant/30 text-on-surface-variant text-xs hover:bg-surface-container-low hover:border-primary/50 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                            Register New Provider
+                        </button>
+</div>
+</section>
+<!-- Right Column: Telemetry (8 cols) -->
+<section class="lg:col-span-8 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-lg font-bold tracking-tight">Telemetry Overview</h3>
+<div class="flex bg-surface-container-low p-1 rounded-lg">
+<button class="px-3 py-1 text-[10px] font-bold uppercase rounded bg-surface-container-highest text-primary">Request Volume</button>
+<button class="px-3 py-1 text-[10px] font-bold uppercase rounded text-on-surface-variant hover:text-on-surface">Token Throughput</button>
+</div>
+</div>
+<div class="glass-card p-8 rounded-2xl min-h-[400px] flex flex-col justify-between">
+<!-- Bar Chart Simulation -->
+<div class="flex-1 flex items-end gap-6 mb-8 px-4">
+<!-- local_fast -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="relative w-full">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-surface-container-highest text-primary text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">8.2k reqs</div>
+<div class="w-full bg-orange-500/20 rounded-t-lg group-hover:bg-orange-500/30 transition-colors" style="height: 140px;">
+<div class="w-full bg-primary rounded-t-lg shadow-[0_0_15px_rgba(249,115,22,0.3)]" style="height: 100px;"></div>
+</div>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase tracking-tighter">local_fast</span>
+</div>
+<!-- cloud_debug -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="relative w-full">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-surface-container-highest text-primary text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">3.4k reqs</div>
+<div class="w-full bg-orange-600/20 rounded-t-lg group-hover:bg-orange-600/30 transition-colors" style="height: 60px;">
+<div class="w-full bg-orange-500 rounded-t-lg" style="height: 40px;"></div>
+</div>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase tracking-tighter">cloud_debug</span>
+</div>
+<!-- archive_slow -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="relative w-full">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-surface-container-highest text-primary text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">12.1k reqs</div>
+<div class="w-full bg-tertiary/20 rounded-t-lg group-hover:bg-tertiary/30 transition-colors" style="height: 220px;">
+<div class="w-full bg-tertiary rounded-t-lg shadow-[0_0_15px_rgba(78,222,163,0.3)]" style="height: 180px;"></div>
+</div>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase tracking-tighter">archive_slow</span>
+</div>
+<!-- experimental -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="relative w-full">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-surface-container-highest text-primary text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">1.1k reqs</div>
+<div class="w-full bg-outline-variant/20 rounded-t-lg" style="height: 30px;">
+<div class="w-full bg-outline-variant/40 rounded-t-lg" style="height: 15px;"></div>
+</div>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase tracking-tighter">experimental</span>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/10 flex items-center justify-between text-xs">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-on-surface-variant">Successful</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary/20"></span>
+<span class="text-on-surface-variant">Cached</span>
+</div>
+</div>
+<span class="text-outline">Last 24 hours of inference traffic</span>
+</div>
+</div>
+<!-- Bottom Bento: Recent Active Routes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="route">route</span>
+</div>
+<div>
+<p class="text-[10px] uppercase text-on-surface-variant tracking-wider">Top Route</p>
+<p class="font-headline font-bold">/v1/chat/completions</p>
+</div>
+<div class="ml-auto text-right">
+<p class="text-lg font-bold">88%</p>
+<p class="text-[10px] text-outline">Total Vol</p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="energy_savings_leaf">energy_savings_leaf</span>
+</div>
+<div>
+<p class="text-[10px] uppercase text-on-surface-variant tracking-wider">Efficiency</p>
+<p class="font-headline font-bold">Smart-Routing Active</p>
+</div>
+<div class="ml-auto text-right">
+<p class="text-lg font-bold text-tertiary">-$420</p>
+<p class="text-[10px] text-outline">Saved/mo</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

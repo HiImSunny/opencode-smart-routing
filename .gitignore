@@ -12,6 +12,7 @@ build/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+stitchs/
 
 # Virtual environments
 .venv/
