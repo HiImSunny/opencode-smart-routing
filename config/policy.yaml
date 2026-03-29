@@ -1,0 +1,82 @@
+routing:
+  default_route: cloud_fast
+
+  thresholds:
+    local_fast_max_chars: 2000
+    local_fast_max_messages: 6
+    cloud_architecture_min_chars: 8000
+
+  keyword_rules:
+    cloud_vision:
+      - image
+      - screenshot
+      - figma
+      - ui mockup
+      - photo
+    cloud_debug:
+      - debug
+      - stacktrace
+      - traceback
+      - logs
+      - security
+      - vulnerability
+      - review
+    cloud_architecture:
+      - architecture
+      - refactor
+      - multi-file
+      - migration
+      - system design
+      - plan
+      - redesign
+    local_fast:
+      - rename
+      - fix typo
+      - docstring
+      - write test
+      - small fix
+
+fallback_chains:
+  local_fast:
+    - provider: ollama
+      model: qwen2.5-coder:7b
+    - provider: minimax
+      model: MiniMax-Text-01
+  cloud_fast:
+    - provider: minimax
+      model: MiniMax-Text-01
+    - provider: minimax
+      model: MiniMax-M1
+    - provider: zhipu
+      model: glm-4-plus
+  cloud_debug:
+    - provider: minimax
+      model: MiniMax-M1
+    - provider: zhipu
+      model: glm-4-plus
+    - provider: minimax
+      model: MiniMax-Text-01
+  cloud_architecture:
+    - provider: zhipu
+      model: glm-4-plus
+    - provider: minimax
+      model: MiniMax-M1
+  cloud_vision:
+    - provider: moonshot
+      model: moonshot-v1-8k
+    - provider: zhipu
+      model: glm-4v
+
+timeouts:
+  ollama_seconds: 60
+  cloud_seconds: 30
+  fallback_extra_seconds: 10
+
+retry:
+  max_retries_per_provider: 2
+  retry_on_status: [429, 500, 502, 503, 504]
+
+cooldown:
+  enabled: true
+  window_seconds: 60
+  failure_threshold: 3
