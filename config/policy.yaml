@@ -52,14 +52,20 @@ fallback_chains:
   cloud_debug:
     - provider: opencode_go
       model: your-cloud-model
+    - provider: ollama
+      model: qwen2.5-coder:7b
 
   cloud_architecture:
     - provider: opencode_go
       model: your-cloud-model
+    - provider: ollama
+      model: qwen2.5-coder:7b
 
   cloud_vision:
     - provider: opencode_go
       model: your-cloud-vision-model
+    - provider: ollama
+      model: qwen2.5-coder:7b
 
 timeouts:
   ollama_seconds: 60

@@ -101,10 +101,6 @@ async def stream_with_fallback(
         if adapter is None:
             continue
 
-        # Only OpenAICompatibleAdapter supports streaming
-        if not isinstance(adapter, OpenAICompatibleAdapter):
-            continue
-
         try:
             record.chosen_model = entry.model
             record.chosen_provider = entry.provider

@@ -48,6 +48,9 @@ class OpenAICompatibleAdapter(BaseAdapter):
         return payload
 
     async def chat(self, request: ChatCompletionRequest, model: str) -> ChatCompletionResponse:
+        if not self.api_key:
+            raise ValueError(f"API key not configured for provider {self.base_url}")
+        
         payload = self._build_payload(request, model)
         payload["stream"] = False  # non-streaming path
 
@@ -100,6 +103,9 @@ class OpenAICompatibleAdapter(BaseAdapter):
 
     async def stream_chat(self, request: ChatCompletionRequest, model: str) -> AsyncIterator[bytes]:
         """Yield SSE chunks as raw bytes for streaming pass-through."""
+        if not self.api_key:
+            raise ValueError(f"API key not configured for provider {self.base_url}")
+            
         payload = self._build_payload(request, model)
         payload["stream"] = True
 
@@ -115,5 +121,6 @@ class OpenAICompatibleAdapter(BaseAdapter):
                     yield chunk
 
     async def is_available(self) -> bool:
-        """Cloud adapters are assumed available (no cheap health check)."""
-        return True
+        """Cloud adapters are available only if API key is configured and URL is valid."""
+        is_dummy_url = "your-opencode-go-endpoint" in self.base_url
+        return bool(self.api_key) and not is_dummy_url

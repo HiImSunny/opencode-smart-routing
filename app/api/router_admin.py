@@ -1,7 +1,10 @@
 import asyncio
 from fastapi import APIRouter, Request, HTTPException
 from app.core.policy_loader import get_policy, get_providers, get_policy_loaded_at, load_policy
-from app.core.settings import POLICY_FILE, PROVIDERS_FILE
+from app.core.settings import POLICY_FILE, PROVIDERS_FILE, LOG_DIR
+import os
+import json
+from datetime import datetime, timezone
 
 router = APIRouter()
 
@@ -73,3 +76,25 @@ async def reload_policy():
         return {"status": "reloaded", "policy_loaded_at": get_policy_loaded_at()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Reload failed: {e}")
+
+@router.get("/telemetry/logs")
+async def get_telemetry_logs(limit: int = 100):
+    """Return the most recent telemetry logs."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    log_path = os.path.join(LOG_DIR, f"requests-{today}.jsonl")
+    
+    if not os.path.exists(log_path):
+        return {"logs": []}
+        
+    logs = []
+    with open(log_path, "r", encoding="utf-8") as f:
+        # Read all lines, but this could be large in prod. For MVP it's fine.
+        lines = f.readlines()
+        
+    for line in reversed(lines[-limit:]):
+        try:
+            logs.append(json.loads(line))
+        except:
+            pass
+            
+    return {"logs": logs}

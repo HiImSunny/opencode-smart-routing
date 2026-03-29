@@ -42,6 +42,11 @@ async def chat_completions(http_request: Request, body: ChatCompletionRequest):
             try:
                 async for chunk in stream_with_fallback(body, route_class, policy, adapters, record):
                     yield chunk
+            except Exception as e:
+                import json
+                error_payload = json.dumps({"error": {"message": str(e), "type": "router_error", "code": 502}})
+                yield f"data: {error_payload}\n\n".encode("utf-8")
+                yield b"data: [DONE]\n\n"
             finally:
                 record.latency_ms = (time.monotonic() - t_start) * 1000
                 await log_record(record, LOG_DIR)

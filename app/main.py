@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 from app.core.settings import POLICY_FILE, PROVIDERS_FILE, ROUTER_PORT
 from app.core.policy_loader import load_policy, get_providers
@@ -53,8 +54,15 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(router_admin.router)
     app.include_router(chat.router)
-    
-    app.mount("/ui", StaticFiles(directory="static", html=True), name="ui")
+
+    @app.get("/ui")
+    @app.get("/ui/")
+    async def ui_redirect():
+        return RedirectResponse(url="/index.html")
+
+    # Serve SPA — mount at root last so API routes take priority
+    app.mount("/ui", StaticFiles(directory="static", html=True), name="ui-legacy")
+    app.mount("/", StaticFiles(directory="static", html=True), name="ui")
 
     return app
 
