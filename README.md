@@ -39,7 +39,7 @@ poetry install
 
 ```bash
 cp .env.example .env
-# Edit .env to change port or paths if needed
+# Edit .env to set your OPENCODE_GO_API_KEY if required by your setup
 ```
 
 ### 3. Start the router
@@ -96,7 +96,7 @@ Controls routing thresholds, keyword rules, fallback chains, timeouts, and coold
 
 ### `config/providers.yaml`
 
-Defines backends (Ollama and OpenCode Go). No API keys are required for local providers.
+Defines backends (Ollama and OpenCode Go). API keys are read from environment variables (e.g. `OPENCODE_GO_API_KEY`).
 
 ---
 
