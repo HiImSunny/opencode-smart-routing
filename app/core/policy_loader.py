@@ -40,3 +40,32 @@ def get_providers() -> ProvidersConfig:
 
 def get_policy_loaded_at() -> str:
     return _policy_loaded_at
+
+
+def get_ollama_model() -> str:
+    """Return the current Ollama model used in fallback chains."""
+    if _policy is None:
+        from app.core.settings import OLLAMA_MODEL
+        return OLLAMA_MODEL
+    for chain in _policy.fallback_chains.values():
+        for entry in chain:
+            if entry.provider == "ollama":
+                return entry.model
+    from app.core.settings import OLLAMA_MODEL
+    return OLLAMA_MODEL
+
+
+def set_ollama_model(model: str) -> int:
+    """
+    Replace the Ollama model in ALL fallback chain entries at runtime.
+    Returns the number of chain entries updated.
+    """
+    if _policy is None:
+        raise RuntimeError("Policy not loaded.")
+    count = 0
+    for chain in _policy.fallback_chains.values():
+        for entry in chain:
+            if entry.provider == "ollama":
+                entry.model = model
+                count += 1
+    return count

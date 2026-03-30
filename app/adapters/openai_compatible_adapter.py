@@ -31,7 +31,11 @@ class OpenAICompatibleAdapter(BaseAdapter):
                 {
                     "role": m.role,
                     "content": m.content if isinstance(m.content, str)
-                    else [p.model_dump(exclude_none=True) for p in m.content],
+                    else [p.model_dump(exclude_none=True) for p in m.content]
+                    if m.content is not None else None,
+                    **({"name": m.name} if m.name else {}),
+                    **({"tool_calls": [tc.model_dump() for tc in m.tool_calls]} if m.tool_calls else {}),
+                    **({"tool_call_id": m.tool_call_id} if m.tool_call_id else {}),
                 }
                 for m in request.messages
             ],
@@ -45,7 +49,13 @@ class OpenAICompatibleAdapter(BaseAdapter):
             payload["top_p"] = request.top_p
         if request.stop is not None:
             payload["stop"] = request.stop
+        # Forward tool calling fields to the cloud provider
+        if request.tools:
+            payload["tools"] = [t.model_dump() for t in request.tools]
+        if request.tool_choice is not None:
+            payload["tool_choice"] = request.tool_choice
         return payload
+
 
     async def chat(self, request: ChatCompletionRequest, model: str) -> ChatCompletionResponse:
         if not self.api_key:
