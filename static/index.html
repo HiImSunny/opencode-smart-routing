@@ -293,11 +293,17 @@
           </div>
         </div>
 
-        <!-- Fallback Chains -->
+        <!-- Fallback Chains Visual Editor -->
         <div class="col-span-12 glass-panel rounded-2xl p-8 border border-white/5">
-          <div class="flex items-center gap-3 mb-10">
-            <span class="material-symbols-outlined text-primary">account_tree</span>
-            <h4 class="text-2xl font-headline font-bold" data-en="Fallback Redundancy Chains" data-vi="Chuỗi Dự Phòng (Fallback Chains)">Fallback Redundancy Chains</h4>
+          <div class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary">account_tree</span>
+              <h4 class="text-2xl font-headline font-bold" data-en="Fallback Redundancy Chains" data-vi="Chuỗi Dự Phòng (Fallback Chains)">Fallback Redundancy Chains</h4>
+            </div>
+            <button onclick="saveUiFallbacks()" class="px-6 py-2 rounded-lg bg-tertiary-container/30 text-tertiary font-bold hover:bg-tertiary/20 flex items-center gap-2 transition-all">
+              <span class="material-symbols-outlined text-sm">save</span>
+              <span data-en="Save Chains" data-vi="Lưu Chuỗi">Save Chains</span>
+            </button>
           </div>
           <div id="fallback-chains-container" class="space-y-12 relative">
             <div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div>
@@ -306,38 +312,8 @@
         </div>
         
         <!-- Visual Policy Controls -->
-        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-          <!-- Thresholds Block -->
-          <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 relative hover:border-tertiary/30 transition-colors">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="p-2 bg-tertiary/10 rounded-lg">
-                <span class="material-symbols-outlined text-tertiary">tune</span>
-              </div>
-              <div>
-                <h4 class="text-xl font-headline font-semibold text-on-surface" data-en="Routing Thresholds" data-vi="Ngưỡng Định Tuyến">Routing Thresholds</h4>
-                <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">policy.yaml</p>
-              </div>
-            </div>
-            <div class="space-y-5">
-              <div>
-                <label class="text-xs font-medium text-on-surface-variant mb-1.5 flex items-center justify-between">
-                  <span>Local Fast Max Chars</span>
-                  <span class="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-outline font-mono">characters</span>
-                </label>
-                <input type="number" id="ui-th-local" class="w-full bg-[#0b1326] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-tertiary font-mono text-sm focus:ring-1 focus:ring-tertiary outline-none shadow-inner transition-shadow hover:border-tertiary/50">
-              </div>
-              <div>
-                <label class="text-xs font-medium text-on-surface-variant mb-1.5 flex items-center justify-between">
-                  <span>Cloud Arch Min Chars</span>
-                  <span class="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-outline font-mono">characters</span>
-                </label>
-                <input type="number" id="ui-th-cloud" class="w-full bg-[#0b1326] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-tertiary font-mono text-sm focus:ring-1 focus:ring-tertiary outline-none shadow-inner transition-shadow hover:border-tertiary/50">
-              </div>
-              <button onclick="saveUiThresholds()" class="w-full mt-4 py-2.5 bg-tertiary/20 text-tertiary font-bold rounded-xl hover:bg-tertiary/30 flex justify-center items-center gap-2 transition-all border border-tertiary/20 group">
-                <span class="material-symbols-outlined text-sm group-hover:scale-110 transition-transform">save</span> <span data-en="Update Policy Rules" data-vi="Lưu Cập Nhật Ngưỡng">Update Policy Rules</span>
-              </button>
-            </div>
-          </div>
+        <div class="col-span-12 mt-4">
+
 
           <!-- Providers Integrator -->
           <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 relative flex flex-col hover:border-primary/30 transition-colors">
@@ -861,54 +837,7 @@ async function loadPolicy() {
       kwContainer.innerHTML = `<p class="col-span-2 p-4 text-sm text-on-surface-variant text-center">${currentLang === 'vi' ? 'Chưa cấu hình keyword rules.' : 'No keyword rules configured.'}</p>`;
     }
 
-    // Fallback Chains — dynamic
-    const fbContainer = document.getElementById('fallback-chains-container');
-    if (data.fallback_chains && Object.keys(data.fallback_chains).length > 0) {
-      fbContainer.innerHTML = '<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div>'
-        + Object.entries(data.fallback_chains).map(([route, chain]) => {
-          if (!chain || chain.length === 0) return '';
-          const [primary, ...fallbacks] = chain;
-          const fallbacksHtml = fallbacks.map((f, i) => `
-            <span class="material-symbols-outlined text-slate-600">arrow_forward</span>
-            <div class="flex-1 p-4 rounded-xl bg-surface-container/50 border border-outline-variant/20 flex items-center justify-between opacity-80">
-              <div class="flex items-center gap-3">
-                <div>
-                  <p class="text-[10px] uppercase text-slate-500">Fallback ${i + 1}</p>
-                  <p class="text-sm font-bold font-mono">${f.model}</p>
-                  <p class="text-[10px] text-on-surface-variant/60">${f.provider}</p>
-                </div>
-              </div>
-            </div>`).join('');
-          return `
-            <div class="relative pl-12">
-              <div class="absolute left-0 top-3 w-6 h-6 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center">
-                <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
-              </div>
-              <div class="flex flex-col md:flex-row md:items-center gap-6">
-                <div class="w-48 shrink-0">
-                  <h5 class="text-lg font-headline font-semibold text-slate-200 capitalize">${route.replace(/_/g, ' ')}</h5>
-                  <p class="text-xs font-mono text-slate-500 tracking-tighter">route_id: ${route}</p>
-                </div>
-                <div class="flex flex-1 items-center gap-4 flex-wrap">
-                  <div class="flex-1 p-4 rounded-xl bg-surface-container-highest border border-primary/20 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <span class="material-symbols-outlined text-primary">looks_one</span>
-                      <div>
-                        <p class="text-[10px] uppercase text-slate-500">Primary</p>
-                        <p class="text-sm font-bold font-mono">${primary.model}</p>
-                        <p class="text-[10px] text-on-surface-variant/60">${primary.provider}</p>
-                      </div>
-                    </div>
-                    <span class="material-symbols-outlined text-tertiary">check_circle</span>
-                  </div>
-                  ${fallbacksHtml}
-                </div>
-              </div>
-            </div>`;
-        }).join('');
-    } else {
-      fbContainer.innerHTML = `<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div><p class="relative pl-12 text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Chưa cấu hình fallback chains.' : 'No fallback chains configured.'}</p>`;
-    }
+
 
     // Load raw YAMLs for the editor
     try {
@@ -922,12 +851,8 @@ async function loadPolicy() {
         _parsedPolicy = jsyaml.load(rawData.policy);
         _parsedProviders = jsyaml.load(rawData.providers);
         
-        let th = _parsedPolicy?.rules?.thresholds;
-        if (th) {
-          document.getElementById('ui-th-local').value = th.local_fast_max_chars || '';
-          document.getElementById('ui-th-cloud').value = th.cloud_architecture_min_chars || '';
-        }
         renderUiProviders();
+        renderUiFallbacks();
       }
     } catch(err) {
       console.error('Failed to load raw configs', err);
@@ -940,6 +865,99 @@ async function loadPolicy() {
 
 let _parsedPolicy = null;
 let _parsedProviders = null;
+
+function renderUiFallbacks() {
+  const fbContainer = document.getElementById('fallback-chains-container');
+  if (!_parsedPolicy || !_parsedPolicy.fallback_chains) {
+    fbContainer.innerHTML = `<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div><p class="relative pl-12 text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Chưa cấu hình fallback chains.' : 'No fallback chains configured.'}</p>`;
+    return;
+  }
+  
+  const provIds = _parsedProviders && _parsedProviders.providers ? Object.keys(_parsedProviders.providers) : [];
+  let html = '<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div>';
+  
+  html += Object.keys(_parsedPolicy.fallback_chains).map(route => {
+    const chain = _parsedPolicy.fallback_chains[route] || [];
+    
+    const nodesHtml = chain.map((node, i) => {
+      const isPrimary = i === 0;
+      const arrow = isPrimary ? '' : `<span class="material-symbols-outlined text-slate-600 flex-shrink-0">arrow_forward</span>`;
+      const label = isPrimary ? 'Primary' : `Fallback ${i}`;
+      const icon = isPrimary ? 'looks_one' : '';
+      const bg = isPrimary ? 'bg-surface-container-highest border-primary/20 hover:border-primary/40' : 'bg-surface-container/50 border-outline-variant/20 hover:border-outline-variant/50 opacity-90';
+      const color = isPrimary ? 'text-primary' : 'text-slate-500';
+      
+      return `${arrow}
+        <div class="relative group/node flex-1 min-w-[220px] max-w-[260px] p-3 rounded-xl ${bg} border flex items-center justify-between transition-colors">
+          <div class="flex items-start gap-2.5 w-full">
+            ${icon ? `<span class="material-symbols-outlined ${color} text-[18px] mt-0.5">${icon}</span>` : ''}
+            <div class="flex flex-col gap-1.5 w-full">
+              <p class="text-[10px] uppercase text-slate-500 font-bold tracking-widest">${label}</p>
+              <input type="text" class="w-full bg-[#0b1326] border border-outline-variant/10 rounded px-2 py-1 text-sm font-bold font-mono focus:ring-1 focus:border-primary focus:ring-primary/50 text-on-surface outline-none" 
+                     value="${node.model}" 
+                     onchange="updateFallback('${route}', ${i}, 'model', this.value)" placeholder="model id">
+              <select class="w-full bg-[#0b1326] border border-outline-variant/10 rounded px-2 py-1 text-[11px] font-mono text-on-surface-variant focus:ring-1 focus:ring-primary/50 outline-none cursor-pointer"
+                      onchange="updateFallback('${route}', ${i}, 'provider', this.value)">
+                ${provIds.map(p => `<option value="${p}" ${p === node.provider ? 'selected' : ''}>${p}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          ${!isPrimary ? 
+            `<button onclick="removeFallback('${route}', ${i})" class="absolute -top-2 -right-2 bg-error text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover/node:opacity-100 transition-opacity shadow-lg">
+              <span class="material-symbols-outlined text-[14px]">close</span>
+             </button>` : ''}
+        </div>`;
+    }).join('');
+    
+    return `
+      <div class="relative pl-12 pb-4">
+        <div class="absolute left-0 top-3 w-6 h-6 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center">
+          <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+        </div>
+        <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+          <div class="w-48 shrink-0 pt-2">
+            <h5 class="text-lg font-headline font-bold text-slate-200 capitalize tracking-tight">${route.replace(/_/g, ' ')}</h5>
+            <p class="text-[11px] font-mono text-slate-500 tracking-tighter mt-1">route_id: ${route}</p>
+          </div>
+          <div class="flex flex-1 items-center gap-4 flex-wrap pb-2">
+            ${nodesHtml}
+            <button onclick="addFallback('${route}')" class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-outline hover:border-primary hover:text-primary text-outline hover:bg-primary/10 transition-colors" title="Add Fallback">
+              <span class="material-symbols-outlined text-[18px]">add</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  fbContainer.innerHTML = html;
+}
+
+function updateFallback(route, idx, field, value) {
+  if (!_parsedPolicy) return;
+  _parsedPolicy.fallback_chains[route][idx][field] = value;
+  document.getElementById('policy-yaml-editor').value = jsyaml.dump(_parsedPolicy);
+}
+
+function addFallback(route) {
+  if (!_parsedPolicy) return;
+  const provIds = Object.keys(_parsedProviders.providers);
+  const defProv = provIds.length > 0 ? provIds[0] : 'unknown';
+  _parsedPolicy.fallback_chains[route].push({ provider: defProv, model: 'new-model' });
+  document.getElementById('policy-yaml-editor').value = jsyaml.dump(_parsedPolicy);
+  renderUiFallbacks();
+}
+
+function removeFallback(route, idx) {
+  if (!_parsedPolicy) return;
+  _parsedPolicy.fallback_chains[route].splice(idx, 1);
+  document.getElementById('policy-yaml-editor').value = jsyaml.dump(_parsedPolicy);
+  renderUiFallbacks();
+}
+
+async function saveUiFallbacks() {
+  await saveAllConfigs(true);
+}
 
 function renderUiProviders() {
   const container = document.getElementById('ui-providers-list');
@@ -997,19 +1015,6 @@ function deleteUiProvider(id) {
   document.getElementById('providers-yaml-editor').value = jsyaml.dump(_parsedProviders);
   renderUiProviders();
   saveAllConfigs(true);
-}
-
-async function saveUiThresholds() {
-  if (!_parsedPolicy) return;
-  const locVal = document.getElementById('ui-th-local').value;
-  const cldVal = document.getElementById('ui-th-cloud').value;
-  
-  _parsedPolicy.rules = _parsedPolicy.rules || { thresholds: {} };
-  _parsedPolicy.rules.thresholds.local_fast_max_chars = parseInt(locVal) || 2000;
-  _parsedPolicy.rules.thresholds.cloud_architecture_min_chars = parseInt(cldVal) || 20000;
-  
-  document.getElementById('policy-yaml-editor').value = jsyaml.dump(_parsedPolicy);
-  await saveAllConfigs(true);
 }
 
 async function saveAllConfigs(fromUi = false) {
