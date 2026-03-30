@@ -24,6 +24,10 @@ def load_policy(policy_path: str, providers_path: str) -> None:
     _policy = PolicyConfig(**raw_policy)
     _providers = ProvidersConfig(**raw_providers)
     _policy_loaded_at = datetime.now(timezone.utc).isoformat()
+    
+    # Override ollama models from .env at startup
+    from app.core.settings import OLLAMA_MODEL
+    set_ollama_model(OLLAMA_MODEL)
 
 
 def get_policy() -> PolicyConfig:
