@@ -5,6 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>OpenCode Smart Router - Admin Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -304,35 +305,108 @@
           </div>
         </div>
         
-        <!-- RAW YAML EDITOR -->
-        <div class="col-span-12 mt-4 bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10">
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-primary">code</span>
-              <h4 class="text-xl font-headline font-semibold" data-en="Raw YAML Editor" data-vi="Trình Sửa Dữ Liệu Gốc">Raw YAML Editor</h4>
-            </div>
-            <button onclick="saveAllConfigs()" class="px-6 py-2 rounded-lg bg-tertiary-container/30 text-tertiary font-bold hover:bg-tertiary/20 flex items-center gap-2 transition-all">
-              <span class="material-symbols-outlined text-sm">save</span>
-              <span data-en="Save & Reload" data-vi="Lưu & Tải Lại">Save & Reload</span>
-            </button>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <div class="flex justify-between items-center pl-2 pr-1">
-                <label class="text-xs font-mono text-slate-400 uppercase tracking-widest">policy.yaml</label>
+        <!-- Visual Policy Controls -->
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+          <!-- Thresholds Block -->
+          <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 relative hover:border-tertiary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-tertiary/10 rounded-lg">
+                <span class="material-symbols-outlined text-tertiary">tune</span>
               </div>
-              <textarea id="policy-yaml-editor" class="w-full h-[500px] bg-[#0b1326] border border-outline-variant/20 rounded-xl p-4 text-on-surface font-mono text-xs focus:ring-1 focus:ring-primary shadow-inner custom-scrollbar" spellcheck="false" placeholder="Loading policy.yaml..."></textarea>
-            </div>
-            <div class="space-y-2">
-              <div class="flex justify-between items-center pl-2 pr-1">
-                <label class="text-xs font-mono text-slate-400 uppercase tracking-widest">providers.yaml</label>
+              <div>
+                <h4 class="text-xl font-headline font-semibold text-on-surface" data-en="Routing Thresholds" data-vi="Ngưỡng Định Tuyến">Routing Thresholds</h4>
+                <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">policy.yaml</p>
               </div>
-              <textarea id="providers-yaml-editor" class="w-full h-[500px] bg-[#0b1326] border border-outline-variant/20 rounded-xl p-4 text-on-surface font-mono text-xs focus:ring-1 focus:ring-primary shadow-inner custom-scrollbar" spellcheck="false" placeholder="Loading providers.yaml..."></textarea>
+            </div>
+            <div class="space-y-5">
+              <div>
+                <label class="text-xs font-medium text-on-surface-variant mb-1.5 flex items-center justify-between">
+                  <span>Local Fast Max Chars</span>
+                  <span class="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-outline font-mono">characters</span>
+                </label>
+                <input type="number" id="ui-th-local" class="w-full bg-[#0b1326] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-tertiary font-mono text-sm focus:ring-1 focus:ring-tertiary outline-none shadow-inner transition-shadow hover:border-tertiary/50">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-on-surface-variant mb-1.5 flex items-center justify-between">
+                  <span>Cloud Arch Min Chars</span>
+                  <span class="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-outline font-mono">characters</span>
+                </label>
+                <input type="number" id="ui-th-cloud" class="w-full bg-[#0b1326] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-tertiary font-mono text-sm focus:ring-1 focus:ring-tertiary outline-none shadow-inner transition-shadow hover:border-tertiary/50">
+              </div>
+              <button onclick="saveUiThresholds()" class="w-full mt-4 py-2.5 bg-tertiary/20 text-tertiary font-bold rounded-xl hover:bg-tertiary/30 flex justify-center items-center gap-2 transition-all border border-tertiary/20 group">
+                <span class="material-symbols-outlined text-sm group-hover:scale-110 transition-transform">save</span> <span data-en="Update Policy Rules" data-vi="Lưu Cập Nhật Ngưỡng">Update Policy Rules</span>
+              </button>
             </div>
           </div>
-          <p id="config-save-status" class="mt-4 text-sm font-medium text-center hidden"></p>
+
+          <!-- Providers Integrator -->
+          <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 relative flex flex-col hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-primary/10 rounded-lg">
+                <span class="material-symbols-outlined text-primary">hub</span>
+              </div>
+              <div>
+                <h4 class="text-xl font-headline font-semibold text-on-surface" data-en="Manage Providers" data-vi="Quản Lý Provider">Manage Providers</h4>
+                <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">providers.yaml</p>
+              </div>
+            </div>
+            
+            <div class="flex-1 flex flex-col">
+               <div id="ui-providers-list" class="space-y-2 mb-6 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
+                  <!-- Rendered via JS -->
+               </div>
+               
+               <div class="mt-auto pt-5 border-t border-outline-variant/10">
+                 <p class="text-[10px] font-bold uppercase text-slate-500 mb-3 tracking-widest" data-en="Integrate New Provider" data-vi="Tích Hợp Provider Mới">Integrate New Provider</p>
+                 <div class="grid grid-cols-2 gap-3 mb-3">
+                   <input type="text" id="add-prov-id" placeholder="ID (e.g. groq)" class="bg-[#0b1326] border border-outline-variant/20 rounded-lg px-3 py-2 text-primary font-mono text-sm focus:ring-1 focus:ring-primary outline-none">
+                   <select id="add-prov-type" class="bg-[#0b1326] border border-outline-variant/20 rounded-lg px-3 py-2 text-on-surface text-sm focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+                     <option value="openai_compatible">OpenAI Compatible</option>
+                     <option value="ollama">Ollama</option>
+                   </select>
+                 </div>
+                 <div class="grid grid-cols-2 gap-3 mb-4">
+                   <input type="text" id="add-prov-url" placeholder="Base URL" class="bg-[#0b1326] border border-outline-variant/20 rounded-lg px-3 py-2 text-on-surface font-mono text-sm focus:ring-1 focus:ring-primary outline-none">
+                   <input type="text" id="add-prov-env" placeholder="API Key Env Var" class="bg-[#0b1326] border border-outline-variant/20 rounded-lg px-3 py-2 text-on-surface font-mono text-sm focus:ring-1 focus:ring-primary outline-none">
+                 </div>
+                 <button onclick="addUiProvider()" class="w-full py-2.5 bg-primary/20 text-primary font-bold rounded-xl hover:bg-primary/30 flex justify-center items-center gap-2 transition-all border border-primary/20 group">
+                   <span class="material-symbols-outlined text-sm group-hover:scale-110 transition-transform">add_circle</span> <span data-en="Connect Provider" data-vi="Kết Nối Provider">Connect Provider</span>
+                 </button>
+               </div>
+            </div>
+          </div>
         </div>
+
+        <p id="ui-save-status" class="col-span-12 mt-4 text-sm font-medium text-center hidden"></p>
+
+        <!-- Advanced Mode -->
+        <details class="col-span-12 mt-6 rounded-2xl border border-outline-variant/10 bg-surface-container-highest group/details">
+          <summary class="cursor-pointer p-4 font-bold text-on-surface-variant flex items-center gap-2 select-none hover:text-on-surface transition-colors">
+            <span class="material-symbols-outlined text-sm group-open/details:rotate-90 transition-transform">chevron_right</span>
+            <span data-en="Advanced: Raw Code Editor" data-vi="Nâng cao: Sửa Mã Trực Tiếp">Advanced: Raw Code Editor</span>
+          </summary>
+          <div class="p-6 pt-0 border-t border-outline-variant/10 mt-2">
+            <div class="flex items-center justify-end mb-4 pt-4">
+              <button onclick="saveAllConfigs()" class="px-5 py-1.5 rounded-lg bg-error-container/20 text-error font-bold hover:bg-error-container/40 flex items-center gap-2 transition-all border border-error/20 text-xs">
+                <span class="material-symbols-outlined text-sm">warning</span> <span data-en="Force Save YAML" data-vi="Ép Lưu YAML">Force Save YAML</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <div class="flex justify-between items-center pl-2 pr-1">
+                  <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">policy.yaml</label>
+                </div>
+                <textarea id="policy-yaml-editor" class="w-full h-[400px] bg-[#0b1326] border border-outline-variant/20 rounded-xl p-4 text-on-surface font-mono text-xs focus:ring-1 focus:ring-error shadow-inner custom-scrollbar" spellcheck="false" placeholder="Loading policy.yaml..."></textarea>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between items-center pl-2 pr-1">
+                  <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">providers.yaml</label>
+                </div>
+                <textarea id="providers-yaml-editor" class="w-full h-[400px] bg-[#0b1326] border border-outline-variant/20 rounded-xl p-4 text-on-surface font-mono text-xs focus:ring-1 focus:ring-error shadow-inner custom-scrollbar" spellcheck="false" placeholder="Loading providers.yaml..."></textarea>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
 
       <!-- Warning -->
@@ -842,6 +916,19 @@ async function loadPolicy() {
       const rawData = await rawRes.json();
       document.getElementById('policy-yaml-editor').value = rawData.policy || '';
       document.getElementById('providers-yaml-editor').value = rawData.providers || '';
+      
+      // Load UI state
+      if (typeof jsyaml !== 'undefined') {
+        _parsedPolicy = jsyaml.load(rawData.policy);
+        _parsedProviders = jsyaml.load(rawData.providers);
+        
+        let th = _parsedPolicy?.rules?.thresholds;
+        if (th) {
+          document.getElementById('ui-th-local').value = th.local_fast_max_chars || '';
+          document.getElementById('ui-th-cloud').value = th.cloud_architecture_min_chars || '';
+        }
+        renderUiProviders();
+      }
     } catch(err) {
       console.error('Failed to load raw configs', err);
     }
@@ -851,14 +938,88 @@ async function loadPolicy() {
   }
 }
 
-async function saveAllConfigs() {
-  const pBtn = document.getElementById('config-save-status');
+let _parsedPolicy = null;
+let _parsedProviders = null;
+
+function renderUiProviders() {
+  const container = document.getElementById('ui-providers-list');
+  if (!_parsedProviders || !_parsedProviders.providers) {
+    container.innerHTML = `<p class="text-xs text-on-surface-variant italic">No providers loaded.</p>`;
+    return;
+  }
+  const provs = _parsedProviders.providers;
+  const keys = Object.keys(provs);
+  if (keys.length === 0) {
+    container.innerHTML = `<p class="text-xs text-on-surface-variant italic">No providers available.</p>`;
+  } else {
+    container.innerHTML = keys.map(k => `
+      <div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container border border-outline-variant/10 hover:border-outline-variant/30 transition-colors">
+        <div class="flex flex-col">
+          <span class="font-mono text-sm font-bold text-on-surface">${k}</span>
+          <span class="text-[10px] text-primary/80 uppercase font-bold tracking-wider">${provs[k].type}</span>
+        </div>
+        <button onclick="deleteUiProvider('${k}')" class="p-1.5 text-error opacity-50 hover:opacity-100 hover:bg-error/10 rounded-md transition-all">
+          <span class="material-symbols-outlined text-[16px]">delete</span>
+        </button>
+      </div>
+    `).join('');
+  }
+}
+
+async function addUiProvider() {
+  if (!_parsedProviders) return;
+  const idEl = document.getElementById('add-prov-id');
+  const typeEl = document.getElementById('add-prov-type');
+  const urlEl = document.getElementById('add-prov-url');
+  const envEl = document.getElementById('add-prov-env');
+  
+  const id = idEl.value.trim();
+  if (!id) return;
+  
+  _parsedProviders.providers = _parsedProviders.providers || {};
+  _parsedProviders.providers[id] = {
+    type: typeEl.value,
+    base_url: urlEl.value.trim()
+  };
+  if (envEl.value.trim()) {
+    _parsedProviders.providers[id].api_key_env = envEl.value.trim();
+  }
+  
+  idEl.value = ''; urlEl.value = ''; envEl.value = '';
+  document.getElementById('providers-yaml-editor').value = jsyaml.dump(_parsedProviders);
+  renderUiProviders();
+  await saveAllConfigs(true);
+}
+
+function deleteUiProvider(id) {
+  if (!_parsedProviders || !_parsedProviders.providers) return;
+  delete _parsedProviders.providers[id];
+  document.getElementById('providers-yaml-editor').value = jsyaml.dump(_parsedProviders);
+  renderUiProviders();
+  saveAllConfigs(true);
+}
+
+async function saveUiThresholds() {
+  if (!_parsedPolicy) return;
+  const locVal = document.getElementById('ui-th-local').value;
+  const cldVal = document.getElementById('ui-th-cloud').value;
+  
+  _parsedPolicy.rules = _parsedPolicy.rules || { thresholds: {} };
+  _parsedPolicy.rules.thresholds.local_fast_max_chars = parseInt(locVal) || 2000;
+  _parsedPolicy.rules.thresholds.cloud_architecture_min_chars = parseInt(cldVal) || 20000;
+  
+  document.getElementById('policy-yaml-editor').value = jsyaml.dump(_parsedPolicy);
+  await saveAllConfigs(true);
+}
+
+async function saveAllConfigs(fromUi = false) {
+  const pBtn = document.getElementById('ui-save-status');
   pBtn.classList.remove('hidden');
   pBtn.textContent = currentLang === 'vi' ? 'Đang lưu...' : 'Saving...';
-  pBtn.className = 'mt-4 text-sm font-medium text-center text-on-surface-variant';
+  pBtn.className = 'col-span-12 mt-4 text-sm font-medium text-center text-on-surface-variant';
   
-  const policyYaml = document.getElementById('policy-yaml-editor').value;
-  const provYaml = document.getElementById('providers-yaml-editor').value;
+  let policyYaml = document.getElementById('policy-yaml-editor').value;
+  let provYaml = document.getElementById('providers-yaml-editor').value;
   
   try {
     // Save policy
@@ -878,15 +1039,22 @@ async function saveAllConfigs() {
     if (!res2.ok) throw new Error("Providers YAML Invalid: " + (await res2.json()).detail);
     
     // Reload backend
-    await reloadPolicy();
+    await reloadPolicyAPI();
     
-    pBtn.textContent = currentLang === 'vi' ? '✅ Đã lưu cấu hình và khởi động lại Adapter thành công!' : '✅ Saved & Reloaded Successfully!';
-    pBtn.className = 'mt-4 text-sm font-medium text-center text-tertiary';
-    setTimeout(() => pBtn.classList.add('hidden'), 6000);
+    pBtn.textContent = currentLang === 'vi' ? '✅ Đã áp dụng quy tắc thành công!' : '✅ Applied immediately!';
+    pBtn.className = 'col-span-12 mt-4 text-sm font-medium text-center text-tertiary';
+    setTimeout(() => pBtn.classList.add('hidden'), 4000);
+    
+    // Refresh visual fallback chains without full page reload if possible
+    loadPolicy(); 
   } catch (e) {
     pBtn.textContent = '❌ Error: ' + e.message;
-    pBtn.className = 'mt-4 text-sm font-medium text-center text-error';
+    pBtn.className = 'col-span-12 mt-4 text-sm font-medium text-center text-error';
   }
+}
+
+async function reloadPolicyAPI() {
+   await fetch('/router/reload', { method: 'POST' });
 }
 
 // ============================================================
