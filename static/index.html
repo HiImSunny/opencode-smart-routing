@@ -891,7 +891,7 @@ async function loadTelemetry() {
       const provider = l.chosen_provider || '-';
       const model = l.chosen_model || '-';
       return `
-        <tr class="hover:bg-surface-container/40 transition-colors cursor-pointer" onclick="showLogDetails(${idx})">
+        <tr class="hover:bg-primary/20 hover:shadow-[inset_0_0_20px_rgba(249,115,22,0.15)] transition-all cursor-pointer group" onclick="showLogDetails(${idx})">
           <td class="px-6 py-4 text-on-surface-variant font-mono text-xs">${time}</td>
           <td class="px-6 py-4 font-mono text-primary text-xs" title="${l.request_id}">${shortId}</td>
           <td class="px-6 py-4">
