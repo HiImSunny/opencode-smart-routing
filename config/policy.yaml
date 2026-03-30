@@ -2,9 +2,9 @@ routing:
   default_route: cloud_fast
 
   thresholds:
-    local_fast_max_chars: 2000
-    local_fast_max_messages: 6
-    cloud_architecture_min_chars: 8000
+    local_fast_max_chars: 10000
+    local_fast_max_messages: 10
+    cloud_architecture_min_chars: 20000
 
   keyword_rules:
     cloud_vision:
