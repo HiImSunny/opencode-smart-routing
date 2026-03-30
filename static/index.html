@@ -104,21 +104,25 @@
     <nav class="space-y-1" id="main-nav">
       <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group" data-page="dashboard" href="#dashboard">
         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-        <span class="font-medium">Dashboard</span>
+        <span class="font-medium" data-en='Dashboard' data-vi='Bảng điều khiển'>Dashboard</span>
       </a>
       <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group" data-page="policy" href="#policy">
         <span class="material-symbols-outlined">security</span>
-        <span>Policy Editor</span>
+        <span data-en='Policy Editor' data-vi='Cấu hình định tuyến'>Policy Editor</span>
+      </a>
+      <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group" data-page="models" href="#models">
+        <span class="material-symbols-outlined">model_training</span>
+        <span data-en='Model Settings' data-vi='Quản lý Model'>Model Settings</span>
       </a>
       <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group" data-page="telemetry" href="#telemetry">
         <span class="material-symbols-outlined">terminal</span>
-        <span>Telemetry Logs</span>
+        <span data-en='Telemetry Logs' data-vi='Nhật ký hệ thống'>Telemetry Logs</span>
       </a>
     </nav>
   </div>
   <div class="absolute bottom-8 left-6 right-6">
     <div class="p-4 rounded-xl bg-surface-container-highest/40 backdrop-blur-sm">
-      <p class="text-xs text-on-surface-variant mb-2">Proxy Health</p>
+      <p class="text-xs text-on-surface-variant mb-2"><span data-en='Proxy Health' data-vi='Trạng thái Proxy'>Proxy Health</span></p>
       <div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
         <div id="health-bar" class="h-full bg-tertiary shadow-[0_0_8px_rgba(78,222,163,0.5)] transition-all duration-1000" style="width:0%"></div>
       </div>
@@ -139,9 +143,13 @@
     </div>
   </div>
   <div class="flex items-center gap-3 text-on-surface-variant">
+    <button onclick="toggleLanguage()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container-high transition-colors text-xs font-medium text-surface-tint border border-outline-variant/20 shadow-sm">
+      <span class="material-symbols-outlined text-sm">translate</span>
+      <span id="lang-label">EN</span>
+    </button>
     <button onclick="reloadPolicy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container-high transition-colors text-xs font-medium" title="Hot-reload config">
       <span class="material-symbols-outlined text-sm text-primary">refresh</span>
-      <span>Reload Config</span>
+      <span data-en='Reload Config' data-vi='Tải lại cấu hình'>Reload Config</span>
     </button>
   </div>
 </header>
@@ -159,7 +167,7 @@
           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <span class="material-symbols-outlined text-6xl">dns</span>
           </div>
-          <p class="text-sm font-medium text-on-surface-variant mb-1">Total Providers Online</p>
+          <p class="text-sm font-medium text-on-surface-variant mb-1" data-en="Total Providers Online" data-vi="Tổng Provider Hoạt Động">Total Providers Online</p>
           <div class="flex items-baseline gap-2">
             <h2 id="total-providers" class="text-4xl font-headline font-bold text-primary">-/-</h2>
             <span id="provider-percent" class="text-xs text-tertiary">-% Availability</span>
@@ -171,7 +179,7 @@
           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <span class="material-symbols-outlined text-6xl">verified_user</span>
           </div>
-          <p class="text-sm font-medium text-on-surface-variant mb-1">Policy Last Loaded</p>
+          <p class="text-sm font-medium text-on-surface-variant mb-1" data-en="Policy Last Loaded" data-vi="Lần Cập Nhật Policy Cuối">Policy Last Loaded</p>
           <div class="flex items-baseline gap-2">
             <h2 id="policy-loaded" class="text-4xl font-headline font-bold text-on-surface">-</h2>
           </div>
@@ -182,7 +190,7 @@
           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <span class="material-symbols-outlined text-6xl">speed</span>
           </div>
-          <p class="text-sm font-medium text-on-surface-variant mb-1">Session Avg Latency</p>
+          <p class="text-sm font-medium text-on-surface-variant mb-1" data-en="Session Avg Latency" data-vi="Độ Trễ Phản Hồi Trung Bình">Session Avg Latency</p>
           <div class="flex items-baseline gap-2">
             <h2 id="avg-latency" class="text-4xl font-headline font-bold text-primary-container">-</h2>
           </div>
@@ -195,22 +203,22 @@
         <!-- Left: Provider Status -->
         <section class="lg:col-span-4 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="font-headline text-lg font-bold tracking-tight">Provider Status</h3>
-            <button onclick="loadDashboard()" class="text-xs text-primary hover:underline">Refresh</button>
+            <h3 class="font-headline text-lg font-bold tracking-tight" data-en="Provider Status" data-vi="Trạng thái Provider">Provider Status</h3>
+            <button onclick="loadDashboard()" class="text-xs text-primary hover:underline" data-en="Refresh" data-vi="Làm mới">Refresh</button>
           </div>
           <div id="provider-list" class="space-y-4">
-            <div class="p-5 text-center text-sm text-on-surface-variant animate-pulse">Loading providers...</div>
+            <div class="p-5 text-center text-sm text-on-surface-variant animate-pulse" data-en="Loading providers..." data-vi="Đang tải danh sách provider...">Loading providers...</div>
           </div>
         </section>
 
         <!-- Right: Route Classes -->
         <section class="lg:col-span-8 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="font-headline text-lg font-bold tracking-tight">Active Route Classes</h3>
+            <h3 class="font-headline text-lg font-bold tracking-tight" data-en="Active Route Classes" data-vi="Các Nhánh Định Tuyến Mở">Active Route Classes</h3>
             <span class="text-xs text-on-surface-variant" id="route-classes-count">-</span>
           </div>
           <div id="route-classes-list" class="glass-card p-6 rounded-2xl min-h-[200px]">
-            <div class="text-center text-sm text-on-surface-variant animate-pulse py-8">Loading route classes...</div>
+            <div class="text-center text-sm text-on-surface-variant animate-pulse py-8" data-en="Loading route classes..." data-vi="Đang tải các nhánh định tuyến...">Loading route classes...</div>
           </div>
           <!-- Bottom info cards -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -219,7 +227,7 @@
                 <span class="material-symbols-outlined">route</span>
               </div>
               <div>
-                <p class="text-[10px] uppercase text-on-surface-variant tracking-wider">Top Endpoint</p>
+                <p class="text-[10px] uppercase text-on-surface-variant tracking-wider" data-en="Top Endpoint" data-vi="Endpoint Chính">Top Endpoint</p>
                 <p class="font-headline font-bold">/v1/chat/completions</p>
               </div>
             </div>
@@ -228,7 +236,7 @@
                 <span class="material-symbols-outlined">account_tree</span>
               </div>
               <div>
-                <p class="text-[10px] uppercase text-on-surface-variant tracking-wider">Route Classes</p>
+                <p class="text-[10px] uppercase text-on-surface-variant tracking-wider" data-en="Route Classes" data-vi="Nhóm Route">Route Classes</p>
                 <p id="route-classes-summary" class="font-headline font-bold">-</p>
               </div>
             </div>
@@ -243,15 +251,15 @@
     <div class="max-w-7xl mx-auto space-y-8">
       <div class="flex items-end justify-between">
         <div>
-          <h3 class="text-3xl font-headline font-bold text-on-surface tracking-tight mb-2">Policy Configuration</h3>
-          <p class="text-on-surface-variant font-body">Manage global routing logic, thresholds, and fallback redundancy chains.</p>
+          <h3 class="text-3xl font-headline font-bold text-on-surface tracking-tight mb-2" data-en="Policy Configuration" data-vi="Cấu Hình Định Tuyến">Policy Configuration</h3>
+          <p class="text-on-surface-variant font-body" data-en="Manage global routing logic, thresholds, and fallback redundancy chains." data-vi="Quản lý logic định tuyến, các ngưỡng (thresholds) và các chuỗi dự phòng (fallback chains).">Manage global routing logic, thresholds, and fallback redundancy chains.</p>
         </div>
         <div class="flex gap-4">
           <button onclick="loadPolicy()" class="px-6 py-2.5 rounded-lg bg-surface-container-highest text-primary font-medium hover:bg-surface-variant transition-all">
-            Discard Changes
+            <span data-en="Discard Changes" data-vi="Hủy thay đổi">Discard Changes</span>
           </button>
           <button onclick="reloadPolicy()" class="px-8 py-2.5 rounded-lg bg-gradient-to-br from-primary to-orange-600 text-on-primary font-bold shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-            Reload Backend Config
+            <span data-en="Reload Backend Config" data-vi="Lưu & Áp dụng ngay">Reload Backend Config</span>
           </button>
         </div>
       </div>
@@ -262,10 +270,10 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
           <div class="flex items-center gap-3 mb-8">
             <span class="material-symbols-outlined text-primary">speed</span>
-            <h4 class="text-xl font-headline font-semibold">Thresholds</h4>
+            <h4 class="text-xl font-headline font-semibold" data-en="Thresholds" data-vi="Ngưỡng (Thresholds)">Thresholds</h4>
           </div>
           <div class="space-y-6" id="thresholds-container">
-            <div class="text-center text-sm text-on-surface-variant animate-pulse py-4">Loading thresholds...</div>
+            <div class="text-center text-sm text-on-surface-variant animate-pulse py-4" data-en="Loading thresholds..." data-vi="Đang tải thresholds...">Loading thresholds...</div>
           </div>
         </div>
 
@@ -274,11 +282,11 @@
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-3">
               <span class="material-symbols-outlined text-primary">key_visualizer</span>
-              <h4 class="text-xl font-headline font-semibold">Keyword Rules</h4>
+              <h4 class="text-xl font-headline font-semibold" data-en="Keyword Rules" data-vi="Luật Từ Khóa (Keywords)">Keyword Rules</h4>
             </div>
           </div>
           <div id="keyword-rules-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-4 rounded-xl bg-surface-container-high space-y-4 text-center text-sm text-on-surface-variant animate-pulse">
+            <div class="p-4 rounded-xl bg-surface-container-high space-y-4 text-center text-sm text-on-surface-variant animate-pulse" data-en="Loading keyword rules..." data-vi="Đang tải các luật từ khóa...">
               Loading keyword rules...
             </div>
           </div>
@@ -288,11 +296,11 @@
         <div class="col-span-12 glass-panel rounded-2xl p-8 border border-white/5">
           <div class="flex items-center gap-3 mb-10">
             <span class="material-symbols-outlined text-primary">account_tree</span>
-            <h4 class="text-2xl font-headline font-bold">Fallback Redundancy Chains</h4>
+            <h4 class="text-2xl font-headline font-bold" data-en="Fallback Redundancy Chains" data-vi="Chuỗi Dự Phòng (Fallback Chains)">Fallback Redundancy Chains</h4>
           </div>
           <div id="fallback-chains-container" class="space-y-12 relative">
             <div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div>
-            <div class="relative pl-12 text-sm text-center text-on-surface-variant animate-pulse py-4">Loading fallback chains...</div>
+            <div class="relative pl-12 text-sm text-center text-on-surface-variant animate-pulse py-4" data-en="Loading fallback chains..." data-vi="Đang tải các chuỗi fallback...">Loading fallback chains...</div>
           </div>
         </div>
       </div>
@@ -301,8 +309,8 @@
       <div class="p-4 rounded-xl bg-error-container/10 border border-error/20 flex items-start gap-4">
         <span class="material-symbols-outlined text-error mt-1">warning</span>
         <div>
-          <h5 class="text-sm font-bold text-error">Critical Config Change Warning</h5>
-          <p class="text-sm text-slate-400">Modifying thresholds will affect all incoming inference requests immediately after config reload. Hot-reload via the button above.</p>
+          <h5 class="text-sm font-bold text-error" data-en="Critical Config Change Warning" data-vi="Cảnh Báo Sửa Đổi Cấu Hình">Critical Config Change Warning</h5>
+          <p class="text-sm text-slate-400" data-en="Modifying thresholds will affect all incoming inference requests immediately after config reload." data-vi="Chỉnh sửa các ngưỡng này sẽ lập tức ảnh hưởng đến các request đi vào sau khi bạn nhấn tải lại cấu hình.">Modifying thresholds will affect all incoming inference requests immediately after config reload. Hot-reload via the button above.</p>
         </div>
       </div>
     </div>
@@ -313,13 +321,13 @@
     <div class="max-w-7xl mx-auto space-y-6">
       <div class="flex justify-between items-end">
         <div>
-          <h2 class="text-3xl font-bold font-headline text-on-surface tracking-tight">Telemetry Stream</h2>
-          <p class="text-on-surface-variant font-body">Real-time inference tracing — last 50 requests</p>
+          <h2 class="text-3xl font-bold font-headline text-on-surface tracking-tight" data-en="Telemetry Stream" data-vi="Nhật Ký Hệ Thống">Telemetry Stream</h2>
+          <p class="text-on-surface-variant font-body" data-en="Real-time inference tracing — last 50 requests" data-vi="Theo dõi hoạt động router theo theo gian thực — 50 requests gần nhất">Real-time inference tracing — last 50 requests</p>
         </div>
         <div class="flex gap-3">
           <button onclick="loadTelemetry()" class="flex items-center gap-2 px-4 py-2 bg-surface-container-highest rounded-lg text-sm font-medium text-primary hover:bg-surface-variant transition-colors border border-outline-variant/10">
             <span class="material-symbols-outlined text-sm">refresh</span>
-            <span>Refresh</span>
+            <span data-en="Refresh" data-vi="Làm mới">Refresh</span>
           </button>
         </div>
       </div>
@@ -327,25 +335,25 @@
       <!-- Metric Bento -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/5">
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Total Requests</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1" data-en="Total Requests" data-vi="Tổng Request">Total Requests</p>
           <div class="flex items-end justify-between">
             <span id="total-reqs" class="text-2xl font-bold font-headline">0</span>
           </div>
         </div>
         <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/5">
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Avg Latency</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1" data-en="Avg Latency" data-vi="Độ Phản Hồi Trung Bình">Avg Latency</p>
           <div class="flex items-end justify-between">
             <span id="avg-lat" class="text-2xl font-bold font-headline">-</span>
           </div>
         </div>
         <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/5">
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">P99 Latency</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1" data-en="P99 Latency" data-vi="Độ Phản Hồi P99">P99 Latency</p>
           <div class="flex items-end justify-between">
             <span id="p99-lat" class="text-2xl font-bold font-headline">-</span>
           </div>
         </div>
         <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/5">
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Error Rate</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1" data-en="Error Rate" data-vi="Tỷ Lệ Lỗi">Error Rate</p>
           <div class="flex items-end justify-between">
             <span id="err-rate" class="text-2xl font-bold font-headline">0.00%</span>
           </div>
@@ -358,17 +366,17 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-surface-container-high/50 text-[10px] uppercase tracking-widest text-on-surface-variant">
-                <th class="px-6 py-4 font-semibold">Time</th>
-                <th class="px-6 py-4 font-semibold">Request ID</th>
-                <th class="px-6 py-4 font-semibold">Route Class</th>
-                <th class="px-6 py-4 font-semibold">Provider</th>
-                <th class="px-6 py-4 font-semibold">Model</th>
-                <th class="px-6 py-4 font-semibold text-right">Latency</th>
-                <th class="px-6 py-4 font-semibold text-center">Status</th>
+                <th class="px-6 py-4 font-semibold" data-en="Time" data-vi="Thời gian">Time</th>
+                <th class="px-6 py-4 font-semibold" data-en="Request ID" data-vi="Mã Request">Request ID</th>
+                <th class="px-6 py-4 font-semibold" data-en="Route Class" data-vi="Phân Loại">Route Class</th>
+                <th class="px-6 py-4 font-semibold" data-en="Provider" data-vi="Provider">Provider</th>
+                <th class="px-6 py-4 font-semibold" data-en="Model" data-vi="Model">Model</th>
+                <th class="px-6 py-4 font-semibold text-right" data-en="Latency" data-vi="Độ trễ">Latency</th>
+                <th class="px-6 py-4 font-semibold text-center" data-en="Status" data-vi="Trạng thái">Status</th>
               </tr>
             </thead>
             <tbody id="telemetry-table" class="divide-y divide-outline-variant/5 text-sm font-body">
-              <tr><td colspan="7" class="px-6 py-8 text-center text-on-surface-variant animate-pulse">Loading logs...</td></tr>
+              <tr><td colspan="7" class="px-6 py-8 text-center text-on-surface-variant animate-pulse" data-en="Loading logs..." data-vi="Đang tải dữ liệu...">Loading logs...</td></tr>
             </tbody>
           </table>
         </div>
@@ -376,6 +384,74 @@
           <p id="log-footer" class="text-[10px] text-on-surface-variant font-medium">-</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ========== PAGE: MODELS ========== -->
+  <div id="page-models" class="page p-8">
+    <div class="max-w-3xl mx-auto space-y-8">
+      <div>
+        <h2 class="text-3xl font-headline font-bold text-on-surface tracking-tight mb-2" data-en='Model Settings' data-vi='Quản lý Model'>Model Settings</h2>
+        <p class="text-on-surface-variant font-body"><span data-en='Select the Ollama model for all fallback chains. Changes apply instantly without restarting.' data-vi='Chọn model Ollama dùng chung cho tất cả fallback chain. Thay đổi có hiệu lực ngay lập tức mà không cần khởi động lại router.'>Chọn model Ollama dùng chung cho tất cả fallback chain. Thay đổi có hiệu lực ngay lập tức mà không cần khởi động lại router.</span></p>
+      </div>
+
+      <!-- Current active model banner -->
+      <div class="flex items-center gap-4 p-5 rounded-xl bg-surface-container-low border border-primary/20">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-0.5"><span data-en='Active Model' data-vi='Model đang hoạt động'>Model đang hoạt động</span></p>
+          <p id="active-model-name" class="text-lg font-bold font-mono text-primary truncate">loading...</p>
+        </div>
+        <span id="active-model-badge" class="px-3 py-1 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold uppercase shrink-0">ACTIVE</span>
+      </div>
+
+      <!-- Picker card -->
+      <div class="bg-surface-container-low rounded-2xl p-8 border border-outline-variant/10 space-y-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="material-symbols-outlined text-primary">list</span>
+          <h4 class="text-xl font-headline font-semibold" data-en='Select from installed models' data-vi='Chọn từ danh sách đã cài đặt'>Chọn từ danh sách đã cài đặt</h4>
+        </div>
+
+        <!-- Model list -->
+        <div id="model-list-container" class="space-y-2">
+          <div class="text-center text-sm text-on-surface-variant animate-pulse py-6">Dang tai danh sach models...</div>
+        </div>
+
+        <div class="border-t border-outline-variant/10 pt-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary">edit</span>
+            <h4 class="text-xl font-headline font-semibold" data-en='Or manually enter model name' data-vi='Hoặc nhập tên model thủ công'>Hoặc nhập tên model thủ công</h4>
+          </div>
+          <div class="flex gap-3">
+            <input
+              id="custom-model-input"
+              type="text"
+              placeholder="e.g. llama3.2:3b, deepseek-r1:7b..."
+              class="flex-1 bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface font-mono text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all"
+            />
+            <button
+              onclick="applyCustomModel()"
+              class="px-6 py-3 rounded-lg bg-gradient-to-br from-primary to-orange-600 text-on-primary font-bold text-sm shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all shrink-0"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persist hint -->
+      <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/10 flex items-start gap-3">
+        <span class="material-symbols-outlined text-yellow-400 text-sm mt-0.5">lightbulb</span>
+        <div class="text-xs text-on-surface-variant leading-relaxed">
+          <span data-en='Model change is temporary for this session. To persist across restarts, add to' data-vi='Thay đổi này chỉ có hiệu lực trong phiên làm việc hiện tại. Để lưu thiết lập vĩnh viễn, hãy thêm vào'>Thay đổi này chỉ có hiệu lực trong phiên làm việc hiện tại. Để lưu thiết lập vĩnh viễn, hãy thêm vào</span> <code class="font-mono bg-surface-container-highest px-1.5 py-0.5 rounded text-orange-300">.env</code>:
+          <div class="mt-2 font-mono bg-surface-container-lowest px-3 py-2 rounded text-orange-300 text-xs" id="env-hint">OLLAMA_MODEL=qwen2.5-coder:7b</div>
+        </div>
+      </div>
+
+      <!-- Status message -->
+      <div id="model-status" class="hidden p-4 rounded-xl text-sm font-medium"></div>
     </div>
   </div>
 
@@ -390,9 +466,10 @@
 //  ROUTER — instant SPA navigation, no page reload
 // ============================================================
 const PAGES = {
-  dashboard: { title: 'Admin Dashboard', load: loadDashboard },
-  policy:    { title: 'Policy Editor',   load: loadPolicy    },
-  telemetry: { title: 'Telemetry Logs',  load: loadTelemetry },
+  dashboard: { title_en: 'Admin Dashboard', title_vi: 'Bảng Điều Khiển', load: loadDashboard },
+  policy:    { title_en: 'Policy Editor',   title_vi: 'Cấu Hình Định Tuyến', load: loadPolicy    },
+  models:    { title_en: 'Model Settings',  title_vi: 'Cài Đặt Model', load: loadModels    },
+  telemetry: { title_en: 'Telemetry Logs',  title_vi: 'Lịch Sử Hệ Thống', load: loadTelemetry },
 };
 
 let currentPage = null;
@@ -422,7 +499,7 @@ function navigate(page) {
   });
 
   // Update title
-  document.getElementById('page-title').textContent = PAGES[page].title;
+  document.getElementById('page-title').textContent = PAGES[page]['title_' + currentLang];
 
   currentPage = page;
   history.replaceState(null, '', '#' + page);
@@ -457,10 +534,15 @@ async function loadDashboard() {
 
     const providers = data.providers || {};
     const total = Object.keys(providers).length;
-    const available = Object.values(providers).filter(s => s === 'available').length;
-    const pct = total ? Math.round((available / total) * 100) : 0;
+    let availableCount = 0;
+    Object.values(providers).forEach(p => {
+      const s = typeof p === 'object' ? p.status : p;
+      if (s === 'available') availableCount++;
+    });
+    
+    const pct = total ? Math.round((availableCount / total) * 100) : 0;
 
-    document.getElementById('total-providers').textContent = `${available}/${total}`;
+    document.getElementById('total-providers').textContent = `${availableCount}/${total}`;
     document.getElementById('provider-percent').textContent = `${pct}% Availability`;
 
     // Health bar
@@ -469,19 +551,37 @@ async function loadDashboard() {
     // Provider bars sparkline
     const bars = document.getElementById('provider-bars');
     bars.innerHTML = Array.from({length: total}, (_, i) =>
-      `<div class="h-1 flex-1 ${i < available ? 'bg-tertiary' : 'bg-error/40'} rounded-full"></div>`
+      `<div class="h-1 flex-1 ${i < availableCount ? 'bg-tertiary' : 'bg-error/40'} rounded-full"></div>`
     ).join('');
 
     // Provider list
     const listEl = document.getElementById('provider-list');
     if (total === 0) {
-      listEl.innerHTML = '<p class="p-5 text-center text-sm text-on-surface-variant">No providers configured.</p>';
+      listEl.innerHTML = `<p class="p-5 text-center text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Chưa cấu hình provider nào.' : 'No providers configured.'}</p>`;
     } else {
-      listEl.innerHTML = Object.entries(providers).map(([name, status]) => {
-        const isOk = status === 'available';
+      listEl.innerHTML = Object.entries(providers).map(([name, p]) => {
+        const statusStr = typeof p === 'object' ? p.status : p;
+        const isOk = statusStr === 'available';
+        const warnings = (typeof p === 'object' && p.warnings && p.warnings.length) ? p.warnings : null;
+
+        let warnHtml = '';
+        let badgeColor = isOk ? 'bg-tertiary-container/20 text-tertiary' : 'bg-error-container/20 text-error';
+        let statusDisp = statusStr;
+
+        if (warnings) {
+          badgeColor = 'bg-orange-600/20 text-orange-400';
+          statusDisp = 'WARNING';
+          warnHtml = `<div class="mt-3 p-2 bg-error-container/10 border border-error/20 text-error text-xs rounded flex items-start gap-2">
+            <span class="material-symbols-outlined text-[14px]">warning</span>
+            <div class="flex flex-col gap-1 tracking-tight">
+              ${warnings.map(w => `<span>${w}</span>`).join('')}
+            </div>
+          </div>`;
+        }
+
         return `
-          <div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
-            <div class="flex items-start justify-between mb-2">
+          <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
+            <div class="flex items-start justify-between">
               <div class="flex items-center gap-3">
                 <div class="p-2 rounded-lg bg-surface-container-highest">
                   <span class="material-symbols-outlined text-orange-500">dns</span>
@@ -491,8 +591,9 @@ async function loadDashboard() {
                   <p class="text-[10px] text-on-surface-variant">provider</p>
                 </div>
               </div>
-              <span class="px-2 py-0.5 rounded ${isOk ? 'bg-tertiary-container/20 text-tertiary' : 'bg-error-container/20 text-error'} text-[10px] font-bold uppercase">${status}</span>
+              <span class="px-2 py-0.5 rounded ${badgeColor} text-[10px] font-bold uppercase">${statusDisp}</span>
             </div>
+            ${warnHtml}
           </div>`;
       }).join('');
     }
@@ -504,7 +605,7 @@ async function loadDashboard() {
 
     const rcList = document.getElementById('route-classes-list');
     if (routeClasses.length === 0) {
-      rcList.innerHTML = '<p class="text-center text-sm text-on-surface-variant py-8">No route classes found.</p>';
+      rcList.innerHTML = `<p class="text-center text-sm text-on-surface-variant py-8">${currentLang === 'vi' ? 'Không tìm thấy route class nào.' : 'No route classes found.'}</p>`;
     } else {
       rcList.innerHTML = `<div class="flex flex-wrap gap-3 p-2">${
         routeClasses.map((rc, i) => {
@@ -522,10 +623,11 @@ async function loadDashboard() {
     if (data.policy_loaded_at) {
       const loadedAt = new Date(data.policy_loaded_at);
       const minAgo = Math.floor((Date.now() - loadedAt.getTime()) / 60000);
+      const minText = currentLang === 'vi' ? 'phút trước' : 'min ago';
       if (minAgo < 1) {
-        document.getElementById('policy-loaded').innerHTML = `<1 <span class="text-lg font-light text-on-surface-variant">min ago</span>`;
+        document.getElementById('policy-loaded').innerHTML = `<1 <span class="text-lg font-light text-on-surface-variant">${minText}</span>`;
       } else {
-        document.getElementById('policy-loaded').innerHTML = `${minAgo} <span class="text-lg font-light text-on-surface-variant">min ago</span>`;
+        document.getElementById('policy-loaded').innerHTML = `${minAgo} <span class="text-lg font-light text-on-surface-variant">${minText}</span>`;
       }
     }
 
@@ -545,15 +647,15 @@ async function loadDashboard() {
           const isLast = i === logs.slice(0, 10).length - 1;
           return `<div class="w-full rounded-t-sm ${isLast ? 'bg-primary shadow-[0_0_8px_rgba(249,115,22,0.4)]' : 'bg-orange-500/30'}" style="height:${h}px"></div>`;
         }).join('');
-        document.getElementById('policy-version').textContent = `${logs.length} requests in session`;
+        document.getElementById('policy-version').textContent = currentLang === 'vi' ? `${logs.length} request trong phiên` : `${logs.length} requests in session`;
       } else {
         document.getElementById('avg-latency').innerHTML = `- <span class="text-lg font-light text-on-surface-variant">ms</span>`;
-        document.getElementById('policy-version').textContent = 'No requests yet';
+        document.getElementById('policy-version').textContent = currentLang === 'vi' ? 'Chưa có request nào' : 'No requests yet';
       }
     } catch {}
   } catch (e) {
     console.error('Dashboard load failed', e);
-    document.getElementById('provider-list').innerHTML = '<p class="p-5 text-center text-sm text-error">Failed to connect to backend.</p>';
+    document.getElementById('provider-list').innerHTML = `<p class="p-5 text-center text-sm text-error">${currentLang === 'vi' ? 'Lỗi kết nối tới Backend.' : 'Failed to connect to backend.'}</p>`;
   }
 }
 
@@ -575,7 +677,7 @@ async function loadPolicy() {
           <input id="thresh-${key}" class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-on-surface font-mono focus:ring-1 focus:ring-primary/40 focus:bg-surface-variant transition-all" type="number" value="${val}"/>
         </div>`).join('');
     } else {
-      thresholdsEl.innerHTML = '<p class="text-sm text-on-surface-variant">No thresholds configured.</p>';
+      thresholdsEl.innerHTML = `<p class="text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Chưa cấu hình ngưỡng (thresholds).' : 'No thresholds configured.'}</p>`;
     }
 
     // Keyword Rules — dynamic
@@ -595,7 +697,7 @@ async function loadPolicy() {
           </div>
         </div>`).join('');
     } else {
-      kwContainer.innerHTML = '<p class="col-span-2 p-4 text-sm text-on-surface-variant text-center">No keyword rules configured.</p>';
+      kwContainer.innerHTML = `<p class="col-span-2 p-4 text-sm text-on-surface-variant text-center">${currentLang === 'vi' ? 'Chưa cấu hình keyword rules.' : 'No keyword rules configured.'}</p>`;
     }
 
     // Fallback Chains — dynamic
@@ -644,11 +746,11 @@ async function loadPolicy() {
             </div>`;
         }).join('');
     } else {
-      fbContainer.innerHTML = '<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div><p class="relative pl-12 text-sm text-on-surface-variant">No fallback chains configured.</p>';
+      fbContainer.innerHTML = `<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div><p class="relative pl-12 text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Chưa cấu hình fallback chains.' : 'No fallback chains configured.'}</p>`;
     }
   } catch (e) {
     console.error('Policy load failed', e);
-    document.getElementById('thresholds-container').innerHTML = '<p class="text-sm text-error">Failed to load policy.</p>';
+    document.getElementById('thresholds-container').innerHTML = `<p class="text-sm text-error">${currentLang === 'vi' ? 'Lỗi khi tải chính sách (policy).' : 'Failed to load policy.'}</p>`;
   }
 }
 
@@ -662,7 +764,9 @@ async function loadTelemetry() {
     const logs = data.logs || [];
 
     document.getElementById('total-reqs').textContent = logs.length;
-    document.getElementById('log-footer').textContent = `Showing ${logs.length} most recent requests`;
+    document.getElementById('log-footer').textContent = currentLang === 'vi' 
+      ? `Đang hiển thị ${logs.length} request gần nhất` 
+      : `Showing ${logs.length} most recent requests`;
 
     if (logs.length > 0) {
       const totalLat = logs.reduce((acc, l) => acc + (l.latency_ms || 0), 0);
@@ -679,7 +783,7 @@ async function loadTelemetry() {
 
     const tb = document.getElementById('telemetry-table');
     if (logs.length === 0) {
-      tb.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-on-surface-variant">No telemetry logs found for today.</td></tr>';
+      tb.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-on-surface-variant">${currentLang === 'vi' ? 'Không tìm thấy log nào trong hôm nay.' : 'No telemetry logs found for today.'}</td></tr>`;
       return;
     }
 
@@ -712,8 +816,120 @@ async function loadTelemetry() {
     }).join('');
   } catch (e) {
     console.error('Telemetry load failed', e);
-    document.getElementById('telemetry-table').innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-error">Failed to connect to backend.</td></tr>';
+    document.getElementById('telemetry-table').innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-error">${currentLang === 'vi' ? 'Lỗi kết nối tới Backend.' : 'Failed to connect to backend.'}</td></tr>`;
   }
+}
+
+// ============================================================
+//  MODEL SETTINGS
+// ============================================================
+let _installedModels = [];
+let _currentModel = '';
+
+async function loadModels() {
+  try {
+    const res = await fetch('/router/ollama/models');
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    _installedModels = data.models || [];
+    _currentModel = data.current || '';
+    renderModelList();
+    updateActiveBanner(_currentModel);
+    document.getElementById('env-hint').textContent = `OLLAMA_MODEL=${_currentModel}`;
+  } catch (e) {
+    document.getElementById('model-list-container').innerHTML =
+      `<div class="p-4 rounded-xl bg-error-container/10 border border-error/20 text-error text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">error</span>
+        ${currentLang === 'vi' ? 'Không thể kết nối đến Ollama:' : 'Cannot reach Ollama:'} ${e.message}
+      </div>`;
+    updateActiveBanner(_currentModel || '(unknown)');
+  }
+}
+
+function renderModelList() {
+  const container = document.getElementById('model-list-container');
+  if (_installedModels.length === 0) {
+    container.innerHTML = `
+      <div class="p-6 rounded-xl bg-surface-container text-center space-y-2">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl">inbox</span>
+        <p class="text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Không tìm thấy model nào đã cài đặt.' : 'No installed models found.'}</p>
+        <p class="text-xs text-outline">${currentLang === 'vi' ? 'Chạy:' : 'Run:'} <code class="font-mono bg-surface-container-highest px-1.5 py-0.5 rounded">ollama pull qwen2.5-coder:7b</code></p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = _installedModels.map(m => {
+    const isActive = m === _currentModel;
+    return `
+      <button onclick="selectModel('${m}')" class="w-full text-left flex items-center justify-between gap-4 px-5 py-4 rounded-xl border transition-all duration-200
+        ${isActive
+          ? 'bg-primary/10 border-primary/40 ring-1 ring-primary/30'
+          : 'bg-surface-container border-outline-variant/10 hover:border-primary/20 hover:bg-surface-container-high'}"
+      >
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm ${isActive ? 'text-primary' : 'text-on-surface-variant'}">
+            ${isActive ? 'radio_button_checked' : 'radio_button_unchecked'}
+          </span>
+          <span class="font-mono text-sm font-medium ${isActive ? 'text-primary' : 'text-on-surface'}">${m}</span>
+        </div>
+        ${isActive ? '<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase">Active</span>' : ''}
+      </button>`;
+  }).join('');
+}
+
+function updateActiveBanner(model) {
+  document.getElementById('active-model-name').textContent = model || '(none)';
+}
+
+async function selectModel(model) {
+  await applyModel(model);
+}
+
+async function applyCustomModel() {
+  const input = document.getElementById('custom-model-input');
+  const model = (input.value || '').trim();
+  if (!model) {
+    showModelStatus(currentLang === 'vi' ? 'Vui lòng nhập tên model.' : 'Please enter a model name.', false);
+    return;
+  }
+  await applyModel(model);
+  input.value = '';
+}
+
+async function applyModel(model) {
+  try {
+    const res = await fetch('/router/ollama/model', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
+
+    _currentModel = model;
+    renderModelList();
+    updateActiveBanner(model);
+    document.getElementById('env-hint').textContent = `OLLAMA_MODEL=${model}`;
+    const msg = currentLang === 'vi' 
+      ? `Đã chuyển sang model "${model}" (${data.chains_updated} chains). Thêm vào .env để lưu vĩnh viễn.`
+      : `Switched to model "${model}" (${data.chains_updated} chains). Add to .env to persist across restarts.`;
+    showModelStatus(msg, true);
+  } catch (e) {
+    const err = currentLang === 'vi' ? `Lỗi: ${e.message}` : `Error: ${e.message}`;
+    showModelStatus(err, false);
+  }
+}
+
+function showModelStatus(msg, success) {
+  const el = document.getElementById('model-status');
+  el.classList.remove('hidden', 'bg-tertiary-container/20', 'text-tertiary', 'bg-error-container/20', 'text-error');
+  if (success) {
+    el.classList.add('bg-tertiary-container/20', 'text-tertiary');
+  } else {
+    el.classList.add('bg-error-container/20', 'text-error');
+  }
+  el.textContent = msg;
+  setTimeout(() => el.classList.add('hidden'), 6000);
 }
 
 // ============================================================
@@ -723,17 +939,39 @@ async function reloadPolicy() {
   try {
     const res = await fetch('/router/reload', { method: 'POST' });
     const data = await res.json();
-    alert('✅ Policy reloaded at ' + new Date().toLocaleTimeString());
+    const time = new Date().toLocaleTimeString();
+    alert(currentLang === 'vi' ? `✅ Đã tải lại cấu hình lúc ${time}` : `✅ Policy reloaded at ${time}`);
     if (currentPage === 'policy') loadPolicy();
     else if (currentPage === 'dashboard') loadDashboard();
   } catch (e) {
-    alert('❌ Failed to reload policy: ' + e.message);
+    alert(currentLang === 'vi' ? `❌ Lỗi khi tải cấu hình: ${e.message}` : `❌ Failed to reload policy: ${e.message}`);
   }
 }
 
 // ============================================================
-//  INIT
+//  i18n & INIT
 // ============================================================
+let currentLang = localStorage.getItem('appLang') || 'en';
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'vi' : 'en';
+  localStorage.setItem('appLang', currentLang);
+  applyLanguage();
+  if (currentPage) PAGES[currentPage].load(); // reload dynamic content
+}
+
+function applyLanguage() {
+  document.getElementById('lang-label').textContent = currentLang.toUpperCase();
+  document.querySelectorAll('[data-en][data-vi]').forEach(el => {
+    el.innerHTML = el.getAttribute('data-' + currentLang);
+  });
+  if (currentPage && PAGES[currentPage]) {
+    document.getElementById('page-title').textContent = PAGES[currentPage]['title_' + currentLang];
+  }
+}
+
+applyLanguage();
+
 const hash = location.hash.replace('#', '');
 navigate(hash && PAGES[hash] ? hash : 'dashboard');
 </script>

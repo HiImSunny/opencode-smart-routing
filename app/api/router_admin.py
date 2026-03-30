@@ -1,6 +1,10 @@
 import asyncio
 from fastapi import APIRouter, Request, HTTPException
-from app.core.policy_loader import get_policy, get_providers, get_policy_loaded_at, load_policy
+from app.core.policy_loader import (
+    get_policy, get_providers, get_policy_loaded_at, load_policy,
+    get_ollama_model, set_ollama_model,
+)
+
 from app.core.settings import POLICY_FILE, PROVIDERS_FILE, LOG_DIR
 import os
 import json
@@ -42,18 +46,36 @@ async def router_status(http_request: Request):
     """Return current router state and provider availability."""
     adapters = http_request.app.state.adapters
 
+    policy = get_policy()
+
     # Check availability of each provider concurrently
     async def check(name, adapter):
+        result = {"status": "unavailable", "warnings": []}
         try:
             available = await adapter.is_available()
-            return name, "available" if available else "unavailable"
-        except Exception:
-            return name, "error"
+            if available:
+                result["status"] = "available"
+                # If ollama, check for missing needed models
+                if name == "ollama" and hasattr(adapter, "get_installed_models"):
+                    installed = await adapter.get_installed_models()
+                    needed_models = {
+                        entry.model
+                        for chain in policy.fallback_chains.values()
+                        for entry in chain
+                        if entry.provider == "ollama"
+                    }
+                    missing = needed_models - set(installed)
+                    if missing:
+                        result["warnings"].append(f"Missing models: {', '.join(missing)}")
+                        
+        except Exception as e:
+            result["status"] = "error"
+            result["warnings"].append(str(e))
+        return name, result
 
     results = await asyncio.gather(*[check(n, a) for n, a in adapters.items()])
     provider_status = dict(results)
 
-    policy = get_policy()
     return {
         "route_classes": list(policy.fallback_chains.keys()),
         "providers": provider_status,
@@ -88,7 +110,6 @@ async def get_telemetry_logs(limit: int = 100):
         
     logs = []
     with open(log_path, "r", encoding="utf-8") as f:
-        # Read all lines, but this could be large in prod. For MVP it's fine.
         lines = f.readlines()
         
     for line in reversed(lines[-limit:]):
@@ -98,3 +119,62 @@ async def get_telemetry_logs(limit: int = 100):
             pass
             
     return {"logs": logs}
+
+
+# ──────────────────────────────────────────────
+#  Ollama Model Management
+# ──────────────────────────────────────────────
+
+@router.get("/router/ollama/models")
+async def list_ollama_models(http_request: Request):
+    """Return all models currently installed in the local Ollama instance."""
+    adapters = http_request.app.state.adapters
+    ollama = adapters.get("ollama")
+    if ollama is None:
+        raise HTTPException(status_code=404, detail="Ollama adapter not configured")
+    try:
+        models = await ollama.get_installed_models()
+        current = get_ollama_model()
+        return {"models": models, "current": current}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Cannot reach Ollama: {e}")
+
+
+@router.get("/router/ollama/model")
+async def get_current_ollama_model():
+    """Return the model currently active for all Ollama fallback entries."""
+    return {"model": get_ollama_model()}
+
+
+@router.post("/router/ollama/model")
+async def update_ollama_model(http_request: Request, body: dict):
+    """
+    Hot-swap the Ollama model in all fallback chains (no restart needed).
+    Also invalidates the Ollama adapter's availability cache so the new
+    model is picked up immediately.
+
+    Body: {"model": "qwen2.5-coder:7b"}
+    """
+    model = (body.get("model") or "").strip()
+    if not model:
+        raise HTTPException(status_code=422, detail="'model' field is required")
+
+    try:
+        updated = set_ollama_model(model)
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # Invalidate the availability cache so is_available() re-checks immediately
+    adapters = http_request.app.state.adapters
+    ollama = adapters.get("ollama")
+    if ollama and hasattr(ollama, "_available_cache"):
+        ollama._available_cache = None
+
+    return {
+        "status": "ok",
+        "model": model,
+        "chains_updated": updated,
+        "message": f"Ollama model switched to '{model}' across {updated} chain(s). "
+                   "Add OLLAMA_MODEL={model} to .env to persist after restart.",
+    }
+
