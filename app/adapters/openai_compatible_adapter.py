@@ -13,9 +13,15 @@ from app.schemas.openai_chat import (
 
 
 class OpenAICompatibleAdapter(BaseAdapter):
-    def __init__(self, base_url: str, api_key_env: str | None, timeout: float = 30.0):
+    def __init__(self, base_url: str, api_key_env: str | None = None, api_key: str | None = None, timeout: float = 30.0):
         self.base_url = base_url.rstrip("/")
-        self.api_key = os.environ.get(api_key_env, "") if api_key_env else ""
+        
+        # Priority: explicit api_key > env var
+        resolved_key = api_key
+        if not resolved_key and api_key_env:
+            resolved_key = os.environ.get(api_key_env, "")
+            
+        self.api_key = resolved_key or ""
         self.timeout = timeout
 
     def _headers(self) -> dict:

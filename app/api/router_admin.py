@@ -31,6 +31,7 @@ def rebuild_adapters(app):
             adapters[name] = OpenAICompatibleAdapter(
                 base_url=cfg.base_url,
                 api_key_env=cfg.api_key_env,
+                api_key=cfg.api_key,
             )
     app.state.adapters = adapters
 
