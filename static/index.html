@@ -324,7 +324,10 @@
           <h2 class="text-3xl font-bold font-headline text-on-surface tracking-tight" data-en="Telemetry Stream" data-vi="Nhật Ký Hệ Thống">Telemetry Stream</h2>
           <p class="text-on-surface-variant font-body" data-en="Real-time inference tracing — last 50 requests" data-vi="Theo dõi hoạt động router theo theo gian thực — 50 requests gần nhất">Real-time inference tracing — last 50 requests</p>
         </div>
-        <div class="flex gap-3">
+        <div class="flex items-center gap-3">
+          <select id="telemetry-date" onchange="telPage=1; loadTelemetry()" class="bg-surface-container-highest border border-outline-variant/20 rounded-lg px-3 py-1.5 text-sm font-medium text-on-surface focus:ring-1 focus:ring-primary/50 outline-none cursor-pointer">
+            <option value="">Today</option>
+          </select>
           <button onclick="loadTelemetry()" class="flex items-center gap-2 px-4 py-2 bg-surface-container-highest rounded-lg text-sm font-medium text-primary hover:bg-surface-variant transition-colors border border-outline-variant/10">
             <span class="material-symbols-outlined text-sm">refresh</span>
             <span data-en="Refresh" data-vi="Làm mới">Refresh</span>
@@ -382,6 +385,15 @@
         </div>
         <div class="px-6 py-4 bg-surface-container-high/30 flex items-center justify-between">
           <p id="log-footer" class="text-[10px] text-on-surface-variant font-medium">-</p>
+          <div class="flex items-center gap-2">
+            <button onclick="telPage=Math.max(1, telPage-1); loadTelemetry()" class="px-3 py-1 bg-surface-container-highest hover:bg-surface-variant rounded text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-50" id="tel-prev">
+              <span class="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+            <span id="tel-page-info" class="text-xs font-mono px-2 text-primary">1 / 1</span>
+            <button onclick="telPage++; loadTelemetry()" class="px-3 py-1 bg-surface-container-highest hover:bg-surface-variant rounded text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-50" id="tel-next">
+              <span class="material-symbols-outlined text-sm">chevron_right</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -456,6 +468,51 @@
   </div>
 
 </main>
+
+<!-- Telemetry Modal -->
+<div id="log-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden" onclick="if(event.target===this) this.classList.add('hidden')">
+  <div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden relative">
+    <div class="px-6 py-4 border-b border-outline-variant/10 flex items-center justify-between bg-surface-container-highest">
+      <h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">terminal</span>
+        <span data-en="Request Details" data-vi="Chi tiết Request">Request Details</span>
+        <span id="modal-req-id" class="text-xs font-mono px-2 py-0.5 rounded bg-black/20 text-on-surface-variant ml-2 border border-white/5"></span>
+      </h3>
+      <button onclick="document.getElementById('log-modal').classList.add('hidden')" class="p-1 rounded hover:bg-white/10 text-on-surface-variant transition-colors">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+    <div class="flex-1 overflow-auto p-6 space-y-6 text-sm">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 bg-surface-container rounded-xl border border-outline-variant/5">
+          <p class="text-[10px] uppercase text-on-surface-variant tracking-wider font-bold mb-1">Time</p>
+          <p id="modal-time" class="font-mono text-slate-300"></p>
+        </div>
+        <div class="p-4 bg-surface-container rounded-xl border border-outline-variant/5">
+          <p class="text-[10px] uppercase text-on-surface-variant tracking-wider font-bold mb-1">Route Class</p>
+          <p id="modal-route" class="font-mono text-tertiary"></p>
+        </div>
+        <div class="p-4 bg-surface-container rounded-xl border border-outline-variant/5">
+          <p class="text-[10px] uppercase text-on-surface-variant tracking-wider font-bold mb-1">Provider & Model</p>
+          <p id="modal-model" class="font-mono text-primary truncate" title=""></p>
+        </div>
+        <div class="p-4 bg-surface-container rounded-xl border border-outline-variant/5">
+          <p class="text-[10px] uppercase text-on-surface-variant tracking-wider font-bold mb-1">Status / Latency</p>
+          <div class="flex items-center gap-2 font-mono">
+            <span id="modal-status"></span>
+            <span id="modal-latency" class="text-slate-300"></span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="text-[10px] uppercase text-on-surface-variant tracking-wider font-bold mb-2 pt-2">Raw JSON Payload</p>
+        <div class="bg-[#0b1326] rounded-xl p-6 overflow-x-auto border border-outline-variant/10 shadow-inner">
+          <pre id="modal-json" class="font-mono text-xs text-orange-200/80 leading-relaxed whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Accent FX -->
 <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
@@ -757,18 +814,48 @@ async function loadPolicy() {
 // ============================================================
 //  TELEMETRY
 // ============================================================
+let telPage = 1;
+const telLimit = 50;
+let _rawLogs = []; // keep in memory for modal
+
 async function loadTelemetry() {
   try {
-    const res = await fetch('/telemetry/logs?limit=50');
+    // Populate dates dropdown once
+    const dd = document.getElementById('telemetry-date');
+    if (dd.options.length <= 1) {
+      try {
+        const dRes = await fetch('/telemetry/dates');
+        const dData = await dRes.json();
+        const dates = dData.dates || [];
+        if (dates.length > 0) {
+          dd.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('');
+          // if not set previously, select first (newest)
+          if (!dd.value) dd.value = dates[0];
+        }
+      } catch {}
+    }
+
+    const dateVal = dd.value;
+    const url = `/telemetry/logs?limit=${telLimit}&page=${telPage}` + (dateVal ? `&date=${dateVal}` : '');
+    const res = await fetch(url);
     const data = await res.json();
     const logs = data.logs || [];
+    _rawLogs = logs; // store
+    const total = data.total || 0;
+    const maxPage = Math.ceil(total / telLimit) || 1;
 
-    document.getElementById('total-reqs').textContent = logs.length;
+    document.getElementById('total-reqs').textContent = total;
     document.getElementById('log-footer').textContent = currentLang === 'vi' 
-      ? `Đang hiển thị ${logs.length} request gần nhất` 
-      : `Showing ${logs.length} most recent requests`;
+      ? `Đang hiển thị ${logs.length} request (tùy chọn trang)` 
+      : `Showing ${logs.length} requests (page ${telPage})`;
+
+    // pagination buttons
+    document.getElementById('tel-page-info').textContent = `${telPage} / ${maxPage}`;
+    document.getElementById('tel-prev').disabled = telPage <= 1;
+    document.getElementById('tel-next').disabled = telPage >= maxPage;
 
     if (logs.length > 0) {
+      // stats for current page page
       const totalLat = logs.reduce((acc, l) => acc + (l.latency_ms || 0), 0);
       const avg = Math.round(totalLat / logs.length);
       document.getElementById('avg-lat').textContent = avg + 'ms';
@@ -779,15 +866,19 @@ async function loadTelemetry() {
 
       const errs = logs.filter(l => l.status !== 'success').length;
       document.getElementById('err-rate').textContent = ((errs / logs.length) * 100).toFixed(2) + '%';
+    } else {
+      document.getElementById('avg-lat').textContent = '-';
+      document.getElementById('p99-lat').textContent = '-';
+      document.getElementById('err-rate').textContent = '0.00%';
     }
 
     const tb = document.getElementById('telemetry-table');
     if (logs.length === 0) {
-      tb.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-on-surface-variant">${currentLang === 'vi' ? 'Không tìm thấy log nào trong hôm nay.' : 'No telemetry logs found for today.'}</td></tr>`;
+      tb.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-on-surface-variant">${currentLang === 'vi' ? 'Không có bản ghi nào trong ngày này.' : 'No telemetry logs found for this date.'}</td></tr>`;
       return;
     }
 
-    tb.innerHTML = logs.map(l => {
+    tb.innerHTML = logs.map((l, idx) => {
       const date = new Date(l.timestamp * 1000);
       const time = date.toLocaleTimeString();
       const success = l.status === 'success';
@@ -800,7 +891,7 @@ async function loadTelemetry() {
       const provider = l.chosen_provider || '-';
       const model = l.chosen_model || '-';
       return `
-        <tr class="hover:bg-surface-container/40 transition-colors">
+        <tr class="hover:bg-surface-container/40 transition-colors cursor-pointer" onclick="showLogDetails(${idx})">
           <td class="px-6 py-4 text-on-surface-variant font-mono text-xs">${time}</td>
           <td class="px-6 py-4 font-mono text-primary text-xs" title="${l.request_id}">${shortId}</td>
           <td class="px-6 py-4">
@@ -818,6 +909,29 @@ async function loadTelemetry() {
     console.error('Telemetry load failed', e);
     document.getElementById('telemetry-table').innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-error">${currentLang === 'vi' ? 'Lỗi kết nối tới Backend.' : 'Failed to connect to backend.'}</td></tr>`;
   }
+}
+
+function showLogDetails(idx) {
+  const l = _rawLogs[idx];
+  if (!l) return;
+  const date = new Date(l.timestamp * 1000);
+  
+  document.getElementById('modal-req-id').textContent = l.request_id || 'unknown';
+  document.getElementById('modal-time').textContent = date.toLocaleString();
+  document.getElementById('modal-route').textContent = (l.route_class || 'UNKNOWN').toUpperCase();
+  document.getElementById('modal-model').textContent = `${l.chosen_provider || '-'} / ${l.chosen_model || '-'}`;
+  document.getElementById('modal-model').title = `${l.chosen_provider || '-'} / ${l.chosen_model || '-'}`;
+  
+  const success = l.status === 'success';
+  document.getElementById('modal-status').innerHTML = success 
+    ? '<span class="text-tertiary font-bold uppercase text-[10px] px-1.5 py-0.5 rounded bg-tertiary-container/30">OK</span>' 
+    : '<span class="text-error font-bold uppercase text-[10px] px-1.5 py-0.5 rounded bg-error-container/30">ERR</span>';
+  document.getElementById('modal-latency').textContent = l.latency_ms ? l.latency_ms.toFixed(0) + 'ms' : '-';
+  
+  // Pretty print JSON
+  document.getElementById('modal-json').textContent = JSON.stringify(l, null, 2);
+  
+  document.getElementById('log-modal').classList.remove('hidden');
 }
 
 // ============================================================

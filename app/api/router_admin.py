@@ -100,25 +100,52 @@ async def reload_policy():
         raise HTTPException(status_code=500, detail=f"Reload failed: {e}")
 
 @router.get("/telemetry/logs")
-async def get_telemetry_logs(limit: int = 100):
-    """Return the most recent telemetry logs."""
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    log_path = os.path.join(LOG_DIR, f"requests-{today}.jsonl")
+async def get_telemetry_logs(date: str = None, page: int = 1, limit: int = 50):
+    """Return telemetry logs with pagination and date filter."""
+    if not date:
+        date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        
+    log_path = os.path.join(LOG_DIR, f"requests-{date}.jsonl")
     
     if not os.path.exists(log_path):
-        return {"logs": []}
+        return {"logs": [], "total": 0, "page": page, "limit": limit}
         
     logs = []
     with open(log_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
         
-    for line in reversed(lines[-limit:]):
+    total = len(lines)
+    
+    # Reverse the lines so newest is first
+    lines = list(reversed(lines))
+    
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    
+    for line in lines[start_idx:end_idx]:
         try:
             logs.append(json.loads(line))
         except:
             pass
             
-    return {"logs": logs}
+    return {"logs": logs, "total": total, "page": page, "limit": limit, "date": date}
+
+@router.get("/telemetry/dates")
+async def get_log_dates():
+    """Return a list of available dates from the logs directory."""
+    try:
+        if not os.path.exists(LOG_DIR):
+            return {"dates": []}
+        files = os.listdir(LOG_DIR)
+        dates = []
+        for file in files:
+            if file.startswith("requests-") and file.endswith(".jsonl"):
+                date_str = file[9:-6]
+                dates.append(date_str)
+        dates.sort(reverse=True)
+        return {"dates": dates}
+    except Exception:
+        return {"dates": []}
 
 
 # ──────────────────────────────────────────────
