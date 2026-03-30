@@ -9,8 +9,66 @@ from app.core.settings import POLICY_FILE, PROVIDERS_FILE, LOG_DIR
 import os
 import json
 from datetime import datetime, timezone
+import yaml
+from pydantic import BaseModel
+
+class YamlPayload(BaseModel):
+    yaml_content: str
 
 router = APIRouter()
+
+def rebuild_adapters(app):
+    from app.core.policy_loader import get_providers
+    from app.adapters.ollama_adapter import OllamaAdapter
+    from app.adapters.openai_compatible_adapter import OpenAICompatibleAdapter
+
+    providers_config = get_providers()
+    adapters = {}
+    for name, cfg in providers_config.providers.items():
+        if cfg.type == "ollama":
+            adapters[name] = OllamaAdapter(base_url=cfg.base_url)
+        elif cfg.type == "openai_compatible":
+            adapters[name] = OpenAICompatibleAdapter(
+                base_url=cfg.base_url,
+                api_key_env=cfg.api_key_env,
+            )
+    app.state.adapters = adapters
+
+@router.get("/router/config/raw")
+async def get_raw_config():
+    """Return raw string contents of policy.yaml and providers.yaml."""
+    try:
+        with open(POLICY_FILE, "r", encoding="utf-8") as f:
+            policy_text = f.read()
+        with open(PROVIDERS_FILE, "r", encoding="utf-8") as f:
+            prov_text = f.read()
+        return {"policy": policy_text, "providers": prov_text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/router/config/policy")
+async def save_policy_raw(payload: YamlPayload):
+    try:
+        parsed = yaml.safe_load(payload.yaml_content)
+        if not parsed:
+            raise ValueError("YAML cannot be empty")
+        with open(POLICY_FILE, "w", encoding="utf-8") as f:
+            f.write(payload.yaml_content)
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid YAML: {e}")
+
+@router.put("/router/config/providers")
+async def save_providers_raw(payload: YamlPayload):
+    try:
+        parsed = yaml.safe_load(payload.yaml_content)
+        if not parsed:
+            raise ValueError("YAML cannot be empty")
+        with open(PROVIDERS_FILE, "w", encoding="utf-8") as f:
+            f.write(payload.yaml_content)
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid YAML: {e}")
 
 
 @router.get("/models")
@@ -91,10 +149,11 @@ async def router_policy():
 
 
 @router.post("/router/reload")
-async def reload_policy():
+async def reload_policy_endpoint(http_request: Request):
     """Hot-reload policy.yaml and providers.yaml without restarting."""
     try:
         load_policy(POLICY_FILE, PROVIDERS_FILE)
+        rebuild_adapters(http_request.app)
         return {"status": "reloaded", "policy_loaded_at": get_policy_loaded_at()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Reload failed: {e}")

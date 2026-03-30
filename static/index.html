@@ -107,8 +107,8 @@
         <span class="font-medium" data-en='Dashboard' data-vi='Bảng điều khiển'>Dashboard</span>
       </a>
       <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group" data-page="policy" href="#policy">
-        <span class="material-symbols-outlined">security</span>
-        <span data-en='Policy Editor' data-vi='Cấu hình định tuyến'>Policy Editor</span>
+        <span class="material-symbols-outlined">settings</span>
+        <span data-en='Config Editor' data-vi='Cấu Hình Định Tuyến'>Config Editor</span>
       </a>
       <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group" data-page="models" href="#models">
         <span class="material-symbols-outlined">model_training</span>
@@ -251,8 +251,8 @@
     <div class="max-w-7xl mx-auto space-y-8">
       <div class="flex items-end justify-between">
         <div>
-          <h3 class="text-3xl font-headline font-bold text-on-surface tracking-tight mb-2" data-en="Policy Configuration" data-vi="Cấu Hình Định Tuyến">Policy Configuration</h3>
-          <p class="text-on-surface-variant font-body" data-en="Manage global routing logic, thresholds, and fallback redundancy chains." data-vi="Quản lý logic định tuyến, các ngưỡng (thresholds) và các chuỗi dự phòng (fallback chains).">Manage global routing logic, thresholds, and fallback redundancy chains.</p>
+          <h3 class="text-3xl font-headline font-bold text-on-surface tracking-tight mb-2" data-en="Config Editor" data-vi="Cấu Hình Hệ Thống">Config Editor</h3>
+          <p class="text-on-surface-variant font-body" data-en="Manage global routing logic, thresholds, providers and fallback chains." data-vi="Quản lý logic định tuyến, các ngưỡng (thresholds), providers và các chuỗi dự phòng.">Manage global routing logic, thresholds, providers and fallback chains.</p>
         </div>
         <div class="flex gap-4">
           <button onclick="loadPolicy()" class="px-6 py-2.5 rounded-lg bg-surface-container-highest text-primary font-medium hover:bg-surface-variant transition-all">
@@ -302,6 +302,36 @@
             <div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div>
             <div class="relative pl-12 text-sm text-center text-on-surface-variant animate-pulse py-4" data-en="Loading fallback chains..." data-vi="Đang tải các chuỗi fallback...">Loading fallback chains...</div>
           </div>
+        </div>
+        
+        <!-- RAW YAML EDITOR -->
+        <div class="col-span-12 mt-4 bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary">code</span>
+              <h4 class="text-xl font-headline font-semibold" data-en="Raw YAML Editor" data-vi="Trình Sửa Dữ Liệu Gốc">Raw YAML Editor</h4>
+            </div>
+            <button onclick="saveAllConfigs()" class="px-6 py-2 rounded-lg bg-tertiary-container/30 text-tertiary font-bold hover:bg-tertiary/20 flex items-center gap-2 transition-all">
+              <span class="material-symbols-outlined text-sm">save</span>
+              <span data-en="Save & Reload" data-vi="Lưu & Tải Lại">Save & Reload</span>
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <div class="flex justify-between items-center pl-2 pr-1">
+                <label class="text-xs font-mono text-slate-400 uppercase tracking-widest">policy.yaml</label>
+              </div>
+              <textarea id="policy-yaml-editor" class="w-full h-[500px] bg-[#0b1326] border border-outline-variant/20 rounded-xl p-4 text-on-surface font-mono text-xs focus:ring-1 focus:ring-primary shadow-inner custom-scrollbar" spellcheck="false" placeholder="Loading policy.yaml..."></textarea>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center pl-2 pr-1">
+                <label class="text-xs font-mono text-slate-400 uppercase tracking-widest">providers.yaml</label>
+              </div>
+              <textarea id="providers-yaml-editor" class="w-full h-[500px] bg-[#0b1326] border border-outline-variant/20 rounded-xl p-4 text-on-surface font-mono text-xs focus:ring-1 focus:ring-primary shadow-inner custom-scrollbar" spellcheck="false" placeholder="Loading providers.yaml..."></textarea>
+            </div>
+          </div>
+          <p id="config-save-status" class="mt-4 text-sm font-medium text-center hidden"></p>
         </div>
       </div>
 
@@ -524,7 +554,7 @@
 // ============================================================
 const PAGES = {
   dashboard: { title_en: 'Admin Dashboard', title_vi: 'Bảng Điều Khiển', load: loadDashboard },
-  policy:    { title_en: 'Policy Editor',   title_vi: 'Cấu Hình Định Tuyến', load: loadPolicy    },
+  policy:    { title_en: 'Config Editor',   title_vi: 'Cấu Hình Hệ Thống', load: loadPolicy    },
   models:    { title_en: 'Model Settings',  title_vi: 'Cài Đặt Model', load: loadModels    },
   telemetry: { title_en: 'Telemetry Logs',  title_vi: 'Lịch Sử Hệ Thống', load: loadTelemetry },
 };
@@ -805,9 +835,57 @@ async function loadPolicy() {
     } else {
       fbContainer.innerHTML = `<div class="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent"></div><p class="relative pl-12 text-sm text-on-surface-variant">${currentLang === 'vi' ? 'Chưa cấu hình fallback chains.' : 'No fallback chains configured.'}</p>`;
     }
+
+    // Load raw YAMLs for the editor
+    try {
+      const rawRes = await fetch('/router/config/raw');
+      const rawData = await rawRes.json();
+      document.getElementById('policy-yaml-editor').value = rawData.policy || '';
+      document.getElementById('providers-yaml-editor').value = rawData.providers || '';
+    } catch(err) {
+      console.error('Failed to load raw configs', err);
+    }
   } catch (e) {
     console.error('Policy load failed', e);
     document.getElementById('thresholds-container').innerHTML = `<p class="text-sm text-error">${currentLang === 'vi' ? 'Lỗi khi tải chính sách (policy).' : 'Failed to load policy.'}</p>`;
+  }
+}
+
+async function saveAllConfigs() {
+  const pBtn = document.getElementById('config-save-status');
+  pBtn.classList.remove('hidden');
+  pBtn.textContent = currentLang === 'vi' ? 'Đang lưu...' : 'Saving...';
+  pBtn.className = 'mt-4 text-sm font-medium text-center text-on-surface-variant';
+  
+  const policyYaml = document.getElementById('policy-yaml-editor').value;
+  const provYaml = document.getElementById('providers-yaml-editor').value;
+  
+  try {
+    // Save policy
+    let res1 = await fetch('/router/config/policy', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ yaml_content: policyYaml })
+    });
+    if (!res1.ok) throw new Error("Policy YAML Invalid: " + (await res1.json()).detail);
+    
+    // Save providers
+    let res2 = await fetch('/router/config/providers', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ yaml_content: provYaml })
+    });
+    if (!res2.ok) throw new Error("Providers YAML Invalid: " + (await res2.json()).detail);
+    
+    // Reload backend
+    await reloadPolicy();
+    
+    pBtn.textContent = currentLang === 'vi' ? '✅ Đã lưu cấu hình và khởi động lại Adapter thành công!' : '✅ Saved & Reloaded Successfully!';
+    pBtn.className = 'mt-4 text-sm font-medium text-center text-tertiary';
+    setTimeout(() => pBtn.classList.add('hidden'), 6000);
+  } catch (e) {
+    pBtn.textContent = '❌ Error: ' + e.message;
+    pBtn.className = 'mt-4 text-sm font-medium text-center text-error';
   }
 }
 
